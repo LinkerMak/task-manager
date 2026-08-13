@@ -17,19 +17,14 @@ public class User {
     private Long id;
 
     @Column(name = "username", nullable = false, unique = true, length = 100)
-    private String username;
+    private String email;
 
-    @Column(name = "password_hash", nullable = false, length = 100)
+    @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    public User(String username, String passwordHash) {
-        this.username = username;
+    public User(String email, String passwordHash) {
+        this.email = email;
         this.passwordHash = passwordHash;
     }
 
-    public User(Long id, String username, String passwordHash) {
-        this.id = id;
-        this.username = username;
-        this.passwordHash = passwordHash;
-    }
 }
