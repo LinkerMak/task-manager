@@ -1,4 +1,4 @@
-package com.example.task_manager_backend.security;
+package com.example.task_manager_backend.security.constants;
 
 import lombok.experimental.UtilityClass;
 

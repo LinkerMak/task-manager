@@ -1,9 +1,9 @@
-package com.example.task_manager_backend.config;
+package com.example.task_manager_backend.security.config;
 
+import com.example.task_manager_backend.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -11,8 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.NullSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -20,11 +19,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   SessionAuthenticationFilter redisSessionAuthenticationFilter,
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter,
                                                    AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
         configureStatelessSecurity(http);
-        configureSessionFilter(http, redisSessionAuthenticationFilter);
-
+        configureJwtAuthenticationFilter(http, jwtAuthenticationFilter);
         configureAuthorization(http);
         configureAuthenticationEntryPoint(http, authenticationEntryPoint);
 
@@ -35,25 +33,25 @@ public class SecurityConfig {
 
     private void configureStatelessSecurity(HttpSecurity http) {
         http
-                .securityContext(sc -> sc
-                        .securityContextRepository(new NullSecurityContextRepository())
-                )
                 .sessionManagement(sm -> sm
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
     }
 
-    private void configureSessionFilter(HttpSecurity http, SessionAuthenticationFilter sessionAuthenticationFilter) {
+    private void configureJwtAuthenticationFilter(HttpSecurity http,
+                                                  JwtAuthenticationFilter jwtAuthenticationFilter) {
         http
-                .addFilterAfter(
-                        sessionAuthenticationFilter,
-                        SecurityContextHolderFilter.class);
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
     }
 
     private void configureAuthorization(HttpSecurity http) {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(
+                                HttpMethod.POST,
                                 SecurityPaths.PUBLIC_PATHS.toArray(new String[0])
                         ).permitAll()
                         .anyRequest().authenticated()
@@ -69,23 +67,8 @@ public class SecurityConfig {
     private void disableUnusedDefaults(HttpSecurity http) {
         http
                 .csrf(csrf -> csrf.disable())
-                // .formLogin(form -> form.disable())
+                .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable());
-    }
-
-    @Bean
-    SessionAuthenticationFilter sessionAuthenticationFilter(
-            SessionRepository sessionRepository,
-            SessionProperties sessionProperties
-    ) {
-        return new SessionAuthenticationFilter(
-                sessionRepository,
-                sessionProperties);
-    }
-
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
     }
 
     @Bean

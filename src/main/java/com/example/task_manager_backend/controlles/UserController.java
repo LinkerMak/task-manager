@@ -1,23 +1,26 @@
 package com.example.task_manager_backend.controlles;
 
 import com.example.task_manager_backend.dto.web.security.RegisterRequest;
-import com.example.task_manager_backend.services.UserRegisterService;
+import com.example.task_manager_backend.dto.web.user.CurrentUserResponse;
+import com.example.task_manager_backend.services.registration.UserRegisterService;
+import com.example.task_manager_backend.services.user.CurrentUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
-import static com.example.task_manager_backend.security.SecurityConstants.BEARER_TOKEN_PREFIX;
+import static com.example.task_manager_backend.security.constants.SecurityConstants.BEARER_TOKEN_PREFIX;
 
-@RestController("/user")
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/user")
 public class UserController {
 
     private final UserRegisterService userRegisterService;
+    private final CurrentUserService currentUserService;
 
     @PostMapping
     public ResponseEntity<Void> register(
@@ -31,5 +34,14 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping
+    public ResponseEntity<CurrentUserResponse> getCurrentUser(
+            @AuthenticationPrincipal Long userId) {
 
+        CurrentUserResponse userResponse = currentUserService.getUser(userId);
+
+        return ResponseEntity
+                .ok()
+                .body(userResponse);
+    }
 }

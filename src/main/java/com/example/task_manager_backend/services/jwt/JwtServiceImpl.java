@@ -1,7 +1,8 @@
-package com.example.task_manager_backend.services;
+package com.example.task_manager_backend.services.jwt;
 
-import com.example.task_manager_backend.config.JwtProperties;
-import com.example.task_manager_backend.models.User;
+import com.example.task_manager_backend.security.config.JwtProperties;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -16,7 +17,7 @@ import java.util.Date;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class JwtServiceImpl implements JwtService{
+public class JwtServiceImpl implements JwtService {
 
     private static final String GENERATE_TOKEN_STARTED =
             "JWT access token generation started: userId={}, email={}";
@@ -38,7 +39,7 @@ public class JwtServiceImpl implements JwtService{
 
         Instant issuedAt = Instant.now();
         Instant expiresAt =
-                issuedAt.plus(jwtProperties.accessTokenTTL());
+                issuedAt.plus(jwtProperties.accessTokenTtl());
 
         String accessToken = Jwts.builder()
                 .subject(userId.toString())
@@ -55,6 +56,32 @@ public class JwtServiceImpl implements JwtService{
         );
 
         return accessToken;
+    }
+
+    @Override
+    public Long extractUserId(String accessToken) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(accessToken)
+                .getPayload();
+
+        return Long.parseLong(claims.getSubject());
+    }
+
+    @Override
+    public boolean isAccessTokenValid(String accessToken) {
+        try {
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(accessToken);
+
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("JWT access token validation failed: reason={}", e.getMessage());
+            return false;
+        }
     }
 
     private SecretKey getSigningKey() {
