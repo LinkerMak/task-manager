@@ -2,7 +2,7 @@ package com.example.task_manager_backend.services.user;
 
 import com.example.task_manager_backend.dto.web.user.CurrentUserResponse;
 import com.example.task_manager_backend.exceptions.resource.ResourceNotFoundException;
-import com.example.task_manager_backend.models.User;
+import com.example.task_manager_backend.models.user.User;
 import com.example.task_manager_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,5 +1,6 @@
 package com.example.task_manager_backend.security.filter;
 
+import com.example.task_manager_backend.repositories.UserRepository;
 import com.example.task_manager_backend.security.constants.SecurityConstants;
 import com.example.task_manager_backend.services.jwt.JwtService;
 import jakarta.servlet.FilterChain;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final UserRepository userRepository;
     private final JwtService jwtService;
 
     @Override
@@ -58,6 +60,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         Long userId = jwtService.extractUserId(accessToken);
+
+        if (!userRepository.existsById(userId)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(

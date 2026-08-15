@@ -1,4 +1,4 @@
-package com.example.task_manager_backend.models;
+package com.example.task_manager_backend.models.user;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -8,8 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @SpringBootApplication
 public class TaskManagerBackendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TaskManagerBackendApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TaskManagerBackendApplication.class, args);
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.example.task_manager_backend.controlles;
+package com.example.task_manager_backend.controlles.user;
 
 import com.example.task_manager_backend.dto.web.security.RegisterRequest;
 import com.example.task_manager_backend.dto.web.user.CurrentUserResponse;

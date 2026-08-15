@@ -1,7 +1,7 @@
 package com.example.task_manager_backend.advices;
 
-import com.example.task_manager_backend.controlles.AuthController;
-import com.example.task_manager_backend.controlles.UserController;
+import com.example.task_manager_backend.controlles.auth.AuthController;
+import com.example.task_manager_backend.controlles.user.UserController;
 import com.example.task_manager_backend.dto.web.exception.ExceptionResponse;
 import com.example.task_manager_backend.exceptions.authentication.InvalidCredentialsException;
 import com.example.task_manager_backend.exceptions.resource.ResourceAlreadyExistsException;

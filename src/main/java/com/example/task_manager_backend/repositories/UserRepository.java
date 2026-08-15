@@ -1,6 +1,6 @@
 package com.example.task_manager_backend.repositories;
 
-import com.example.task_manager_backend.models.User;
+import com.example.task_manager_backend.models.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +15,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    String email(String email);
+    boolean existsById(Long id);
 }

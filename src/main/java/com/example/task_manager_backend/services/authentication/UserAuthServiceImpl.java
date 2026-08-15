@@ -2,7 +2,7 @@ package com.example.task_manager_backend.services.authentication;
 
 import com.example.task_manager_backend.dto.web.security.LoginRequest;
 import com.example.task_manager_backend.exceptions.authentication.InvalidCredentialsException;
-import com.example.task_manager_backend.models.User;
+import com.example.task_manager_backend.models.user.User;
 import com.example.task_manager_backend.repositories.UserRepository;
 import com.example.task_manager_backend.services.email.normalizer.EmailNormalizer;
 import com.example.task_manager_backend.services.jwt.JwtService;
