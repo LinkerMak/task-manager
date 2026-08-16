@@ -2,6 +2,7 @@ package com.example.task_manager_backend.services.task;
 
 import com.example.task_manager_backend.dto.web.task.TaskRequest;
 import com.example.task_manager_backend.dto.web.task.TaskResponse;
+import com.example.task_manager_backend.exceptions.resource.ResourceNotFoundException;
 import com.example.task_manager_backend.mappers.TaskMapper;
 import com.example.task_manager_backend.models.task.Task;
 import com.example.task_manager_backend.models.user.User;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -52,5 +55,93 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.toResponse(createdTask);
     }
 
+    @Override
+    @Transactional
+    public TaskResponse updateTask(Long taskId, TaskRequest taskRequest, Long userId) {
+        log.debug("Updating task: taskId={}, userId={}", taskId, userId);
+
+        Task task = taskRepository.findByIdAndOwner_Id(taskId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Task not found by id=" + taskId + " for user with id=" + userId)
+                );
+
+        task.updateDetails(
+                taskRequest.title(),
+                taskRequest.description()
+        );
+
+        log.info("Task updated: taskId={}, userId={}", taskId, userId);
+
+        return taskMapper.toResponse(task);
+    }
+
+    @Override
+    public TaskResponse completeTask(Long taskId, Long userId) {
+        log.debug("Completing task: taskId={}, userId={}", taskId, userId);
+
+        Task task = taskRepository.findByIdAndOwner_Id(taskId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Task not found by id=" + taskId + " for user with id=" + userId)
+                );
+
+        task.markAsDone();
+
+        log.info(
+                "Task completed: taskId={}, userId={}, completedAt={}",
+                taskId,
+                userId,
+                task.getCompletedAt()
+        );
+
+        return taskMapper.toResponse(task);
+    }
+
+    @Override
+    public TaskResponse reopenTask(Long taskId, Long userId) {
+        log.debug("Reopening task: taskId={}, userId={}", taskId, userId);
+
+        Task task = taskRepository.findByIdAndOwner_Id(taskId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Task not found by id=" + taskId + " for user with id=" + userId)
+                );
+
+        task.reopen();
+
+        log.info("Task reopened: taskId={}, userId={}", taskId, userId);
+
+        return taskMapper.toResponse(task);
+    }
+
+    @Override
+    public void delete(Long taskId, Long userId) {
+        log.debug("Deleting task: taskId={}, userId={}", taskId, userId);
+
+        Task task = taskRepository.findByIdAndOwner_Id(taskId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Task not found by id=" + taskId + " for user with id=" + userId)
+                );
+
+        taskRepository.delete(task);
+
+        log.info("Task deleted: taskId={}, userId={}", taskId, userId);
+    }
+
+    @Override
+    public List<TaskResponse> getAllTasksForUser(Long userId) {
+        log.debug("Getting tasks for user: userId={}", userId);
+
+        List<TaskResponse> taskResponses = taskRepository.findAllByOwner_IdOrderByIdDesc(userId)
+                .stream()
+                .map((task) -> taskMapper.toResponse(task))
+                .toList();
+
+        log.debug(
+                "Tasks retrieved: userId={}, tasksCount={}",
+                userId,
+                taskResponses.size()
+        );
+
+        return taskResponses;
+    }
 
 }

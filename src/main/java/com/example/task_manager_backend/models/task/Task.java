@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 @Entity
 @Table(name = "tasks")
@@ -40,5 +41,28 @@ public class Task {
         this.description = description;
         this.owner = owner;
         this.status = TaskStatus.TODO;
+    }
+
+    public void updateDetails(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
+    public void markAsDone() {
+        if (status == TaskStatus.DONE) {
+            return;
+        }
+
+        this.status = TaskStatus.DONE;
+        this.completedAt = OffsetDateTime.now(ZoneOffset.UTC);
+    }
+
+    public void reopen() {
+        if (status == TaskStatus.TODO) {
+            return;
+        }
+
+        this.status = TaskStatus.TODO;
+        this.completedAt = null;
     }
 }
