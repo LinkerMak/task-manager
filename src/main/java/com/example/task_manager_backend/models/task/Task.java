@@ -43,26 +43,20 @@ public class Task {
         this.status = TaskStatus.TODO;
     }
 
-    public void updateDetails(String title, String description) {
+    public void updateTitle(String title) {
         this.title = title;
+    }
+
+    public void updateDescription(String description) {
         this.description = description;
     }
 
-    public void markAsDone() {
-        if (status == TaskStatus.DONE) {
-            return;
+    public void changeStatus(TaskStatus taskStatus) {
+        this.status = taskStatus;
+
+        switch(taskStatus) {
+            case TODO -> this.completedAt = null;
+            case DONE -> this.completedAt = OffsetDateTime.now(ZoneOffset.UTC);
         }
-
-        this.status = TaskStatus.DONE;
-        this.completedAt = OffsetDateTime.now(ZoneOffset.UTC);
-    }
-
-    public void reopen() {
-        if (status == TaskStatus.TODO) {
-            return;
-        }
-
-        this.status = TaskStatus.TODO;
-        this.completedAt = null;
     }
 }

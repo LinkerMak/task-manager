@@ -1,4 +1,4 @@
-package com.example.task_manager_backend.controlles.user;
+package com.example.task_manager_backend.controllers.user;
 
 import com.example.task_manager_backend.dto.web.security.RegisterRequest;
 import com.example.task_manager_backend.dto.web.user.CurrentUserResponse;
@@ -16,7 +16,7 @@ import static com.example.task_manager_backend.security.constants.SecurityConsta
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserRegisterService userRegisterService;
@@ -34,7 +34,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("/me")
     public ResponseEntity<CurrentUserResponse> getCurrentUser(
             @AuthenticationPrincipal Long userId) {
 

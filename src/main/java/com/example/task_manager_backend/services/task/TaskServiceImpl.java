@@ -1,10 +1,13 @@
 package com.example.task_manager_backend.services.task;
 
-import com.example.task_manager_backend.dto.web.task.TaskRequest;
-import com.example.task_manager_backend.dto.web.task.TaskResponse;
+import com.example.task_manager_backend.dto.web.task.*;
+import com.example.task_manager_backend.dto.web.task.update.UpdateDescriptionRequest;
+import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
+import com.example.task_manager_backend.dto.web.task.update.UpdateTitleRequest;
 import com.example.task_manager_backend.exceptions.resource.ResourceNotFoundException;
 import com.example.task_manager_backend.mappers.TaskMapper;
 import com.example.task_manager_backend.models.task.Task;
+import com.example.task_manager_backend.models.task.TaskStatus;
 import com.example.task_manager_backend.models.user.User;
 import com.example.task_manager_backend.repositories.TaskRepository;
 import com.example.task_manager_backend.repositories.UserRepository;
@@ -56,58 +59,65 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional
-    public TaskResponse updateTask(Long taskId, TaskRequest taskRequest, Long userId) {
-        log.debug("Updating task: taskId={}, userId={}", taskId, userId);
+    public TaskResponse updateDescription(Long taskId, UpdateDescriptionRequest descriptionRequest, Long userId) {
+        log.debug("Updating task description: taskId={}, userId={}, descriptionRequest={}", taskId, userId, descriptionRequest);
 
         Task task = taskRepository.findByIdAndOwner_Id(taskId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Task not found by id=" + taskId + " for user with id=" + userId)
                 );
 
-        task.updateDetails(
-                taskRequest.title(),
-                taskRequest.description()
-        );
-
-        log.info("Task updated: taskId={}, userId={}", taskId, userId);
-
-        return taskMapper.toResponse(task);
-    }
-
-    @Override
-    public TaskResponse completeTask(Long taskId, Long userId) {
-        log.debug("Completing task: taskId={}, userId={}", taskId, userId);
-
-        Task task = taskRepository.findByIdAndOwner_Id(taskId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Task not found by id=" + taskId + " for user with id=" + userId)
-                );
-
-        task.markAsDone();
+        task.updateDescription(descriptionRequest.description());
 
         log.info(
-                "Task completed: taskId={}, userId={}, completedAt={}",
+                "Task description updated: taskId={}, userId={}, description={}",
                 taskId,
                 userId,
-                task.getCompletedAt()
-        );
+                task.getDescription());
 
         return taskMapper.toResponse(task);
     }
 
     @Override
-    public TaskResponse reopenTask(Long taskId, Long userId) {
-        log.debug("Reopening task: taskId={}, userId={}", taskId, userId);
+    public TaskResponse updateTitle(Long taskId, UpdateTitleRequest titleRequest, Long userId) {
+        log.debug("Updating task title: taskId={}, userId={}, titleRequest={}", taskId, userId, titleRequest);
 
         Task task = taskRepository.findByIdAndOwner_Id(taskId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Task not found by id=" + taskId + " for user with id=" + userId)
                 );
 
-        task.reopen();
+        task.updateTitle(titleRequest.title());
 
-        log.info("Task reopened: taskId={}, userId={}", taskId, userId);
+        log.info(
+                "Task title updated: taskId={}, userId={}, title={}",
+                taskId,
+                userId,
+                task.getTitle());
+
+        return taskMapper.toResponse(task);
+    }
+
+    @Override
+    public TaskResponse changeStatus(Long taskId, UpdateTaskStatusRequest updateTaskStatusRequest, Long userId) {
+        log.debug("Changing task status: taskId={}, userId={}, statusRequest={}", taskId, userId, updateTaskStatusRequest);
+
+        TaskStatus status = updateTaskStatusRequest.status();
+
+        Task task = taskRepository.findByIdAndOwner_Id(taskId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Task not found by id=" + taskId + " for user with id=" + userId)
+                );
+
+        task.changeStatus(status);
+
+        log.info(
+                "Task status changed: taskId={}, userId={}, status={}, completedAt={}",
+                taskId,
+                userId,
+                status,
+                task.getCompletedAt()
+        );
 
         return taskMapper.toResponse(task);
     }

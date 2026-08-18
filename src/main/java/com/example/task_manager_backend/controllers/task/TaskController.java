@@ -1,7 +1,10 @@
-package com.example.task_manager_backend.controlles.task;
+package com.example.task_manager_backend.controllers.task;
 
+import com.example.task_manager_backend.dto.web.task.update.UpdateDescriptionRequest;
+import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
 import com.example.task_manager_backend.dto.web.task.TaskRequest;
 import com.example.task_manager_backend.dto.web.task.TaskResponse;
+import com.example.task_manager_backend.dto.web.task.update.UpdateTitleRequest;
 import com.example.task_manager_backend.services.task.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,16 +40,6 @@ public class TaskController {
                 .body(taskResponse);
     }
 
-    @PutMapping("/taskId")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long taskId,
-                                                   @Valid @RequestBody TaskRequest taskRequest,
-                                                   @AuthenticationPrincipal Long userId) {
-        TaskResponse taskResponse = taskService.updateTask(taskId, taskRequest, userId);
-        return ResponseEntity
-                .ok()
-                .body(taskResponse);
-    }
-
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId,
                                            @AuthenticationPrincipal Long userId) {
@@ -56,19 +49,31 @@ public class TaskController {
                 .build();
     }
 
-    @PatchMapping("/{taskId}/completed")
-    public ResponseEntity<TaskResponse> completeTask(@PathVariable Long taskId,
-                                                     @AuthenticationPrincipal Long userId) {
-        TaskResponse taskResponse = taskService.completeTask(taskId, userId);
+    @PatchMapping("/{taskId}/description")
+    public ResponseEntity<TaskResponse> updateDescription(@Valid @RequestBody UpdateDescriptionRequest descriptionRequest,
+                                                    @PathVariable Long taskId,
+                                                    @AuthenticationPrincipal Long userId) {
+        TaskResponse taskResponse = taskService.updateDescription(taskId, descriptionRequest, userId);
         return ResponseEntity
                 .ok()
                 .body(taskResponse);
     }
 
-    @PatchMapping("/{taskId}/reopen")
-    public ResponseEntity<TaskResponse> reopenTask(@PathVariable Long taskId,
-                                                   @AuthenticationPrincipal Long userId) {
-        TaskResponse taskResponse = taskService.reopenTask(taskId, userId);
+    @PatchMapping("/{taskId}/title")
+    public ResponseEntity<TaskResponse> updateTitle(@Valid @RequestBody UpdateTitleRequest titleRequest,
+                                                     @PathVariable Long taskId,
+                                                     @AuthenticationPrincipal Long userId) {
+        TaskResponse taskResponse = taskService.updateTitle(taskId, titleRequest, userId);
+        return ResponseEntity
+                .ok()
+                .body(taskResponse);
+    }
+
+    @PatchMapping("/{taskId}/status")
+    public ResponseEntity<TaskResponse> changeStatus(@Valid @RequestBody UpdateTaskStatusRequest updateTaskStatusRequest,
+                                                     @PathVariable Long taskId,
+                                                     @AuthenticationPrincipal Long userId) {
+        TaskResponse taskResponse = taskService.changeStatus(taskId, updateTaskStatusRequest, userId);
         return ResponseEntity
                 .ok()
                 .body(taskResponse);

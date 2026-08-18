@@ -1,5 +1,6 @@
 package com.example.task_manager_backend.dto.web.security;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import static com.example.task_manager_backend.dto.web.security.messages.Validat
 public class LoginRequest implements EmailPasswordRequest {
 
     @NotBlank(message = EMAIL_REQUIRED)
+    @Email(message = EMAIL_INVALID_FORMAT)
     @Size(max = 255, message = EMAIL_SIZE)
     private String email;
 

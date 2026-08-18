@@ -1,4 +1,4 @@
-package com.example.task_manager_backend.controlles.auth;
+package com.example.task_manager_backend.controllers.auth;
 
 import com.example.task_manager_backend.dto.web.security.LoginRequest;
 import com.example.task_manager_backend.services.authentication.UserAuthService;
