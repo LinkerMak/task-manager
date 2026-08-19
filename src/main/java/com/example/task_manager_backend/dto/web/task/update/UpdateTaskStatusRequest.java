@@ -1,10 +1,10 @@
 package com.example.task_manager_backend.dto.web.task.update;
 
 import com.example.task_manager_backend.models.task.TaskStatus;
-import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 
 public record UpdateTaskStatusRequest(
-        @Enumerated
+        @NotNull(message = "Status must not be null")
         TaskStatus status
 ) {
 }

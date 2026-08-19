@@ -8,7 +8,7 @@ import java.util.List;
 public final class SecurityPaths {
 
     public static final List<String> PUBLIC_PATHS = List.of(
-            "/user",
+            "/users",
 
             "/auth/login",
             "/auth/logout"

@@ -1,11 +1,12 @@
 package com.example.task_manager_backend.services.task;
 
 import com.example.task_manager_backend.dto.web.task.*;
+import com.example.task_manager_backend.dto.web.pages.PagedResponse;
 import com.example.task_manager_backend.dto.web.task.update.UpdateDescriptionRequest;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTitleRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface TaskService {
 
@@ -19,5 +20,5 @@ public interface TaskService {
 
     void delete(Long taskId, Long userId);
 
-    List<TaskResponse> getAllTasksForUser(Long userId);
+    PagedResponse<TaskResponse> getAllTasksForUser(Long userId, Pageable pageable);
 }

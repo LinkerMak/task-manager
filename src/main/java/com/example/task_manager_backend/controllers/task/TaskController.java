@@ -1,5 +1,6 @@
 package com.example.task_manager_backend.controllers.task;
 
+import com.example.task_manager_backend.dto.web.pages.PagedResponse;
 import com.example.task_manager_backend.dto.web.task.update.UpdateDescriptionRequest;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
 import com.example.task_manager_backend.dto.web.task.TaskRequest;
@@ -8,13 +9,15 @@ import com.example.task_manager_backend.dto.web.task.update.UpdateTitleRequest;
 import com.example.task_manager_backend.services.task.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -80,8 +83,10 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getAllTasks(@AuthenticationPrincipal Long userId) {
-        List<TaskResponse> taskResponses = taskService.getAllTasksForUser(userId);
+    public ResponseEntity<PagedResponse<TaskResponse>> getAllTasks(@AuthenticationPrincipal Long userId,
+                                                          @PageableDefault(size=20, sort="id", direction = Sort.Direction.DESC)
+                                                          Pageable pageable) {
+        PagedResponse<TaskResponse> taskResponses = taskService.getAllTasksForUser(userId, pageable);
         return ResponseEntity
                 .ok()
                 .body(taskResponses);

@@ -1,10 +1,12 @@
 package com.example.task_manager_backend.services.task;
 
 import com.example.task_manager_backend.dto.web.task.*;
+import com.example.task_manager_backend.dto.web.pages.PagedResponse;
 import com.example.task_manager_backend.dto.web.task.update.UpdateDescriptionRequest;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTitleRequest;
 import com.example.task_manager_backend.exceptions.resource.ResourceNotFoundException;
+import com.example.task_manager_backend.mappers.PageMapper;
 import com.example.task_manager_backend.mappers.TaskMapper;
 import com.example.task_manager_backend.models.task.Task;
 import com.example.task_manager_backend.models.task.TaskStatus;
@@ -13,13 +15,14 @@ import com.example.task_manager_backend.repositories.TaskRepository;
 import com.example.task_manager_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class TaskServiceImpl implements TaskService {
 
@@ -29,7 +32,6 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
 
     @Override
-    @Transactional
     public TaskResponse create(TaskRequest taskRequest, Long userId) {
         log.debug(
                 "Creating task: userId={}, titleLength={}, descriptionPresent={}",
@@ -137,21 +139,26 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getAllTasksForUser(Long userId) {
-        log.debug("Getting tasks for user: userId={}", userId);
-
-        List<TaskResponse> taskResponses = taskRepository.findAllByOwner_IdOrderByIdDesc(userId)
-                .stream()
-                .map((task) -> taskMapper.toResponse(task))
-                .toList();
-
+    @Transactional(readOnly = true)
+    public PagedResponse<TaskResponse> getAllTasksForUser(Long userId, Pageable pageable) {
         log.debug(
-                "Tasks retrieved: userId={}, tasksCount={}",
+                "Getting tasks for user: userId={}, page={}, size={}",
                 userId,
-                taskResponses.size()
+                pageable.getPageNumber(),
+                pageable.getPageSize()
         );
 
-        return taskResponses;
+        Page<TaskResponse> taskResponses = taskRepository.findAllByOwner_Id(userId, pageable)
+                .map((task) -> taskMapper.toResponse(task));
+
+        log.debug(
+                "Tasks retrieved: userId={}, tasksOnPage={}, totalElements={}",
+                userId,
+                taskResponses.getNumberOfElements(),
+                taskResponses.getTotalElements()
+        );
+
+        return PageMapper.from(taskResponses);
     }
 
 }
