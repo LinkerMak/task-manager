@@ -3,11 +3,15 @@ package com.example.task_manager_backend.dto.web.security;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static com.example.task_manager_backend.dto.web.security.messages.ValidationMessages.*;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginRequest implements EmailPasswordRequest {
 
     @NotBlank(message = EMAIL_REQUIRED)

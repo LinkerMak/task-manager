@@ -1,0 +1,5 @@
+spring:
+  security:
+    jwt:
+      secret: c29tZS1zZWN1cmUtaW50ZWdyYXRpb24tdGVzdC1qd3Qta2V5LTMyeC1ieXRlcy1sb25n
+      access-token-ttl: PT15M
