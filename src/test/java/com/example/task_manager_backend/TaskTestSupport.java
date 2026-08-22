@@ -2,6 +2,8 @@ package com.example.task_manager_backend;
 
 import com.example.task_manager_backend.AuthTestSupport.AuthenticatedTestUser;
 import com.example.task_manager_backend.dto.web.task.TaskRequest;
+import com.example.task_manager_backend.models.task.Task;
+import com.example.task_manager_backend.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,13 +26,15 @@ public class TaskTestSupport {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
 
-    public CreatedTestTask createTask(AuthenticatedTestUser user) throws Exception {
+    private TaskRepository taskRepository;
+
+    public Task createTask(AuthenticatedTestUser user) throws Exception {
         return createTask(user, "Test task", "Test task description");
     }
 
-    public CreatedTestTask createTask(AuthenticatedTestUser user,
-                                      String title,
-                                      String description) throws Exception {
+    public Task createTask(AuthenticatedTestUser user,
+                                     String title,
+                                     String description) throws Exception {
         TaskRequest request = new TaskRequest(title, description);
 
         String responseBody = mockMvc.perform(post(TASKS_URL)
@@ -40,19 +46,12 @@ public class TaskTestSupport {
                 .getResponse()
                 .getContentAsString();
 
-        JsonNode response = objectMapper.readTree(responseBody);
+        JsonNode responseJson = objectMapper.readTree(responseBody);
+        long taskId = responseJson.required("id").asLong();
 
-        return new CreatedTestTask(
-                response.get("id").asLong(),
-                response.get("title").asText(),
-                response.get("description").asText()
-        );
-    }
-
-    public record CreatedTestTask(
-            Long id,
-            String title,
-            String description
-    ) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Created task was not found: id=" + taskId
+                ));
     }
 }

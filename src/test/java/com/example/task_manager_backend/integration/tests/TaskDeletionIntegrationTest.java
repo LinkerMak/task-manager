@@ -2,6 +2,7 @@ package com.example.task_manager_backend.integration.tests;
 
 import com.example.task_manager_backend.AuthTestSupport;
 import com.example.task_manager_backend.AuthTestSupport.AuthenticatedTestUser;
+import com.example.task_manager_backend.TaskTestSupport;
 import com.example.task_manager_backend.dto.web.task.TaskRequest;
 import com.example.task_manager_backend.models.task.Task;
 import com.example.task_manager_backend.repositories.TaskRepository;
@@ -27,17 +28,17 @@ class TaskDeletionIntegrationTest extends AbstractIntegrationTest {
     private static final String TASKS_URL = "/tasks";
 
     private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
+    private TaskTestSupport taskTestSupport;
     private AuthTestSupport authTestSupport;
     private TaskRepository taskRepository;
 
     @Autowired
     void setDependencies(MockMvc mockMvc,
-                         ObjectMapper objectMapper,
+                         TaskTestSupport taskTestSupport,
                          AuthTestSupport authTestSupport,
                          TaskRepository taskRepository) {
         this.mockMvc = mockMvc;
-        this.objectMapper = objectMapper;
+        this.taskTestSupport = taskTestSupport;
         this.authTestSupport = authTestSupport;
         this.taskRepository = taskRepository;
     }
@@ -46,7 +47,11 @@ class TaskDeletionIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("DELETE /tasks/{taskId} удаляет собственную задачу и возвращает 204")
     void shouldDeleteOwnTaskForAuthenticatedUser() throws Exception {
         AuthenticatedTestUser user = authTestSupport.registerNewUser();
-        Task task = createTask(user, "Buy milk", "2 liters");
+
+        Task task = taskTestSupport.createTask(user,
+                "Buy milk",
+                "2 liters"
+        );
 
         mockMvc.perform(delete(TASKS_URL + "/{taskId}", task.getId())
                         .header(HttpHeaders.AUTHORIZATION, user.bearerHeaderValue()))
@@ -60,7 +65,11 @@ class TaskDeletionIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("DELETE /tasks/{taskId} без токена возвращает 401 и не удаляет задачу")
     void shouldRejectTaskDeletionWithoutToken() throws Exception {
         AuthenticatedTestUser user = authTestSupport.registerNewUser();
-        Task task = createTask(user, "Buy milk", "2 liters");
+
+        Task task = taskTestSupport.createTask(user,
+                "Buy milk",
+                "2 liters"
+        );
 
         mockMvc.perform(delete(TASKS_URL + "/{taskId}", task.getId()))
                 .andExpect(status().isUnauthorized());
@@ -74,7 +83,10 @@ class TaskDeletionIntegrationTest extends AbstractIntegrationTest {
         AuthenticatedTestUser owner = authTestSupport.registerNewUser();
         AuthenticatedTestUser anotherUser = authTestSupport.registerNewUser();
 
-        Task task = createTask(owner, "Private task", "Must not be deleted");
+        Task task = taskTestSupport.createTask(owner,
+                "Private task",
+                "Must not be deleted"
+        );
 
         mockMvc.perform(delete(TASKS_URL + "/{taskId}", task.getId())
                         .header(HttpHeaders.AUTHORIZATION, anotherUser.bearerHeaderValue()))
@@ -95,22 +107,5 @@ class TaskDeletionIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isNotFound());
 
         assertThat(taskRepository.count()).isZero();
-    }
-
-    private Task createTask(AuthenticatedTestUser user,
-                            String title,
-                            String description) throws Exception {
-        TaskRequest request = new TaskRequest(title, description);
-
-        mockMvc.perform(post(TASKS_URL)
-                        .header(HttpHeaders.AUTHORIZATION, user.bearerHeaderValue())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
-
-        return taskRepository.findAll().stream()
-                .filter(task -> task.getOwner().getId().equals(user.userId()))
-                .findFirst()
-                .orElseThrow();
     }
 }
