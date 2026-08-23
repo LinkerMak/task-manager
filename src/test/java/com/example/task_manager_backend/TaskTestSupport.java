@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,7 +25,7 @@ public class TaskTestSupport {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
 
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     public Task createTask(AuthenticatedTestUser user) throws Exception {
         return createTask(user, "Test task", "Test task description");

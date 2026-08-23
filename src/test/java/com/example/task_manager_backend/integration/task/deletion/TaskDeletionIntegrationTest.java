@@ -1,9 +1,9 @@
-package com.example.task_manager_backend.integration.tests;
+package com.example.task_manager_backend.integration.task.deletion;
 
 import com.example.task_manager_backend.AuthTestSupport;
 import com.example.task_manager_backend.AuthTestSupport.AuthenticatedTestUser;
 import com.example.task_manager_backend.TaskTestSupport;
-import com.example.task_manager_backend.dto.web.task.TaskRequest;
+import com.example.task_manager_backend.integration.task.AbstractIntegrationTest;
 import com.example.task_manager_backend.models.task.Task;
 import com.example.task_manager_backend.repositories.TaskRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;

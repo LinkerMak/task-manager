@@ -1,4 +1,4 @@
-package com.example.task_manager_backend.integration.tests;
+package com.example.task_manager_backend.integration.task;
 
 import com.example.task_manager_backend.AuthTestSupport;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,8 +1,9 @@
-package com.example.task_manager_backend.integration.tests;
+package com.example.task_manager_backend.integration.task.creation;
 
 import com.example.task_manager_backend.AuthTestSupport;
 import com.example.task_manager_backend.AuthTestSupport.AuthenticatedTestUser;
 import com.example.task_manager_backend.dto.web.task.TaskRequest;
+import com.example.task_manager_backend.integration.task.AbstractIntegrationTest;
 import com.example.task_manager_backend.models.task.Task;
 import com.example.task_manager_backend.repositories.TaskRepository;
 import org.junit.jupiter.api.DisplayName;
