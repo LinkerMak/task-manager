@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: task-manager-backend
+
+  data:
+    web:
+      pageable:
+        max-page-size: 100
+
+  autoconfigure:
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
