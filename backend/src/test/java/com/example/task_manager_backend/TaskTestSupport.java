@@ -32,8 +32,8 @@ public class TaskTestSupport {
     }
 
     public Task createTask(AuthenticatedTestUser user,
-                                     String title,
-                                     String description) throws Exception {
+                           String title,
+                           String description) throws Exception {
         TaskRequest request = new TaskRequest(title, description);
 
         String responseBody = mockMvc.perform(post(TASKS_URL)

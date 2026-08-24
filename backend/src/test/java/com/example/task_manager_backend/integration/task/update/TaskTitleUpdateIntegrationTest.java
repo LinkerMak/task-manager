@@ -176,8 +176,8 @@ class TaskTitleUpdateIntegrationTest extends AbstractIntegrationTest {
                         .header(HttpHeaders.AUTHORIZATION, user.bearerHeaderValue())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                            {}
-                            """))
+                                {}
+                                """))
                 .andExpect(status().isBadRequest());
 
         Task unchangedTask = taskRepository.findById(task.getId()).orElseThrow();
