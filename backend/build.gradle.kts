@@ -6,6 +6,7 @@ plugins {
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
+description = "task-manager-email-sender"
 
 java {
     toolchain {
