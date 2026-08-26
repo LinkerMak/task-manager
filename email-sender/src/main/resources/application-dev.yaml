@@ -11,6 +11,8 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: com.example.email.sender.messaging.model
+        spring.json.value.default.type: com.example.emailsender.messaging.model.EmailSendingTask
+        spring.json.use.type.headers: false
 
   mail:
     host: ${MAIL_HOST}
