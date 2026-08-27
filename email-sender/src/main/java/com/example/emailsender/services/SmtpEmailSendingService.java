@@ -1,4 +1,4 @@
-package com.example.emailsender.service;
+package com.example.emailsender.services;
 
 import com.example.emailsender.config.MailProperties;
 import com.example.emailsender.messaging.model.EmailSendingTask;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class SmtpEmailSendingService implements EmailSendingService{
+public class SmtpEmailSendingService implements EmailSendingService {
 
     private final JavaMailSender mailSender;
     private final MailProperties mailProperties;
@@ -23,6 +23,7 @@ public class SmtpEmailSendingService implements EmailSendingService{
         mailMessage.setTo(emailSendingTask.recipientEmail());
         mailMessage.setSubject(emailSendingTask.subject());
         mailMessage.setText(emailSendingTask.body());
+
 
         mailSender.send(mailMessage);
 

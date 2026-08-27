@@ -12,6 +12,24 @@ services:
       - postgres-task-manager-data:/var/lib/postgresql/data
     restart: unless-stopped
 
+  email-sender-postgres:
+    image: postgres:16-alpine
+    container_name: email-sender-postgres
+    environment:
+      POSTGRES_DB: email_sender_db
+      POSTGRES_USER: email_sender_user
+      POSTGRES_PASSWORD: ${POSTGRES_EMAIL_SENDER_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - email_sender_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U email_sender_user -d email_sender_db" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
   kafka:
     image: apache/kafka:4.3.1
     container_name: task-manager-kafka
@@ -56,3 +74,4 @@ services:
 
 volumes:
   postgres-task-manager-data:
+  email_sender_postgres_data:

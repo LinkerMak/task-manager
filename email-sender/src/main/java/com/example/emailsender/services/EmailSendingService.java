@@ -1,4 +1,4 @@
-package com.example.emailsender.service;
+package com.example.emailsender.services;
 
 import com.example.emailsender.messaging.model.EmailSendingTask;
 

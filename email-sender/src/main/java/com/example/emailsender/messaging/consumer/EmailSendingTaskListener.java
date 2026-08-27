@@ -2,7 +2,7 @@ package com.example.emailsender.messaging.consumer;
 
 import com.example.emailsender.messaging.config.KafkaTopicConfiguration;
 import com.example.emailsender.messaging.model.EmailSendingTask;
-import com.example.emailsender.service.EmailSendingService;
+import com.example.emailsender.services.EmailDeliveryProcessingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EmailSendingTaskListener {
 
-    private final EmailSendingService emailSendingService;
+    private final EmailDeliveryProcessingService emailDeliveryProcessingService;
 
     @KafkaListener(
             topics = KafkaTopicConfiguration.EMAIL_SENDING_TASKS_TOPIC,
@@ -29,6 +29,6 @@ public class EmailSendingTaskListener {
                 emailSendingTask.subject()
         );
 
-        emailSendingService.send(emailSendingTask);
+        emailDeliveryProcessingService.process(emailSendingTask);
     }
 }
