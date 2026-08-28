@@ -34,6 +34,8 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+
+    implementation(project(":messaging-contracts"))
 }
 
 tasks.withType<Test> {

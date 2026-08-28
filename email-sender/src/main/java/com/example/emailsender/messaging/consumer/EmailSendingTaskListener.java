@@ -1,11 +1,11 @@
 package com.example.emailsender.messaging.consumer;
 
 import com.example.emailsender.messaging.config.KafkaTopicConfiguration;
-import com.example.emailsender.messaging.model.EmailSendingTask;
 import com.example.emailsender.services.EmailDeliveryProcessingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.taskmanager.contracts.email.EmailSendingTask;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;

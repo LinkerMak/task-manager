@@ -1,6 +1,6 @@
 package com.example.emailsender.services;
 
-import com.example.emailsender.messaging.model.EmailSendingTask;
+import org.example.taskmanager.contracts.email.EmailSendingTask;
 import com.example.emailsender.persistence.entity.EmailDelivery;
 import com.example.emailsender.persistence.entity.EmailDeliveryStatus;
 import com.example.emailsender.repositories.EmailDeliveryRepository;

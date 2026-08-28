@@ -1,7 +1,7 @@
 package com.example.emailsender.services;
 
 import com.example.emailsender.config.MailProperties;
-import com.example.emailsender.messaging.model.EmailSendingTask;
+import org.example.taskmanager.contracts.email.EmailSendingTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
