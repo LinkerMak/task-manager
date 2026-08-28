@@ -49,7 +49,7 @@ public class EmailDelivery {
 
     public void markAsSent() {
         this.status = EmailDeliveryStatus.SENT;
-        this.sentAt = OffsetDateTime.now(ZoneOffset.UTC());
+        this.sentAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     public void markAsProcessing() {

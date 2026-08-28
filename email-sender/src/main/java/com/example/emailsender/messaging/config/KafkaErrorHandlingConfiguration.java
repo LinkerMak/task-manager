@@ -53,7 +53,7 @@ public class KafkaErrorHandlingConfiguration {
     ) {
         return new DeadLetterPublishingRecoverer(
                 kafkaTemplate,
-                (record, exception) ->{
+                (record, exception) -> {
                     log.error(
                             "Sending failed email task to DLT: topic={}, partition={}, offset={}, exceptionType={}",
                             record.topic(),

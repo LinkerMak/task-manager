@@ -45,15 +45,15 @@ spring:
       from: ${MAIL_FROM:noreply@task-manager.local}
 
   datasource:
-    url: jdbc:postgresql://${EMAIL_SENDER_DB_HOST:localhost}:${EMAIL_SENDER_DB_PORT:5432}/${EMAIL_SENDER_DB_NAME:email_sender_db}
+    url: jdbc:postgresql://${EMAIL_SENDER_DB_HOST:localhost}:${EMAIL_SENDER_DB_PORT:5434}/${EMAIL_SENDER_DB_NAME:email_sender_db}
     username: ${EMAIL_SENDER_DB_USERNAME:email_sender_user}
     password: ${EMAIL_SENDER_DB_PASSWORD}
 
-    jpa:
-      hibernate:
-        ddl-auto: validate
-      open-in-view: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
 
-    flyway:
-      enabled: true
-      locations: classpath:db/migration
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

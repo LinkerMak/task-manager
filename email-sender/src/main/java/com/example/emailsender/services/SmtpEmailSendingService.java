@@ -24,7 +24,6 @@ public class SmtpEmailSendingService implements EmailSendingService {
         mailMessage.setSubject(emailSendingTask.subject());
         mailMessage.setText(emailSendingTask.body());
 
-
         mailSender.send(mailMessage);
 
         log.info(
