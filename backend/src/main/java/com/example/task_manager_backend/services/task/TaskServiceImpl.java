@@ -1,7 +1,8 @@
 package com.example.task_manager_backend.services.task;
 
-import com.example.task_manager_backend.dto.web.task.*;
 import com.example.task_manager_backend.dto.web.pages.PagedResponse;
+import com.example.task_manager_backend.dto.web.task.TaskRequest;
+import com.example.task_manager_backend.dto.web.task.TaskResponse;
 import com.example.task_manager_backend.dto.web.task.update.UpdateDescriptionRequest;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTitleRequest;

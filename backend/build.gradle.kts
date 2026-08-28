@@ -43,6 +43,8 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-junit-jupiter")
     testImplementation("org.testcontainers:testcontainers-postgresql")
 
+    implementation("org.springframework.boot:spring-boot-starter-kafka")
+
     implementation(project(":messaging-contracts"))
 
 }

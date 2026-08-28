@@ -1,11 +1,11 @@
 package com.example.emailsender.services;
 
-import org.example.taskmanager.contracts.email.EmailSendingTask;
 import com.example.emailsender.persistence.entity.EmailDelivery;
 import com.example.emailsender.persistence.entity.EmailDeliveryStatus;
 import com.example.emailsender.repositories.EmailDeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.taskmanager.contracts.email.EmailSendingTask;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 

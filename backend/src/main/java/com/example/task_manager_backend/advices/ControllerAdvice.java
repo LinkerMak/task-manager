@@ -80,7 +80,7 @@ public class ControllerAdvice {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ExceptionResponse( INVALID_SORT_FIELD_MESSAGE + e.getPropertyName()));
+                .body(new ExceptionResponse(INVALID_SORT_FIELD_MESSAGE + e.getPropertyName()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

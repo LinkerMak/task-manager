@@ -1,10 +1,10 @@
 package com.example.task_manager_backend.controllers.task;
 
 import com.example.task_manager_backend.dto.web.pages.PagedResponse;
-import com.example.task_manager_backend.dto.web.task.update.UpdateDescriptionRequest;
-import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
 import com.example.task_manager_backend.dto.web.task.TaskRequest;
 import com.example.task_manager_backend.dto.web.task.TaskResponse;
+import com.example.task_manager_backend.dto.web.task.update.UpdateDescriptionRequest;
+import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTitleRequest;
 import com.example.task_manager_backend.services.task.TaskService;
 import jakarta.validation.Valid;
@@ -54,8 +54,8 @@ public class TaskController {
 
     @PatchMapping("/{taskId}/description")
     public ResponseEntity<TaskResponse> updateDescription(@Valid @RequestBody UpdateDescriptionRequest descriptionRequest,
-                                                    @PathVariable Long taskId,
-                                                    @AuthenticationPrincipal Long userId) {
+                                                          @PathVariable Long taskId,
+                                                          @AuthenticationPrincipal Long userId) {
         TaskResponse taskResponse = taskService.updateDescription(taskId, descriptionRequest, userId);
         return ResponseEntity
                 .ok()
@@ -64,8 +64,8 @@ public class TaskController {
 
     @PatchMapping("/{taskId}/title")
     public ResponseEntity<TaskResponse> updateTitle(@Valid @RequestBody UpdateTitleRequest titleRequest,
-                                                     @PathVariable Long taskId,
-                                                     @AuthenticationPrincipal Long userId) {
+                                                    @PathVariable Long taskId,
+                                                    @AuthenticationPrincipal Long userId) {
         TaskResponse taskResponse = taskService.updateTitle(taskId, titleRequest, userId);
         return ResponseEntity
                 .ok()
@@ -84,8 +84,8 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity<PagedResponse<TaskResponse>> getAllTasks(@AuthenticationPrincipal Long userId,
-                                                          @PageableDefault(size=20, sort="id", direction = Sort.Direction.DESC)
-                                                          Pageable pageable) {
+                                                                   @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC)
+                                                                   Pageable pageable) {
         PagedResponse<TaskResponse> taskResponses = taskService.getAllTasksForUser(userId, pageable);
         return ResponseEntity
                 .ok()

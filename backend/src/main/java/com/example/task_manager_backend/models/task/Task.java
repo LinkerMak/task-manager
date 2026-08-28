@@ -54,7 +54,7 @@ public class Task {
     public void changeStatus(TaskStatus taskStatus) {
         this.status = taskStatus;
 
-        switch(taskStatus) {
+        switch (taskStatus) {
             case TODO -> this.completedAt = null;
             case DONE -> this.completedAt = OffsetDateTime.now(ZoneOffset.UTC);
         }
