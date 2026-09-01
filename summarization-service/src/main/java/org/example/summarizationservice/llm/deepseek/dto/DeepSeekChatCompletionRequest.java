@@ -1,4 +1,5 @@
 package org.example.summarizationservice.llm.deepseek.dto;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -16,5 +17,6 @@ public record DeepSeekChatCompletionRequest(
     public record Message(
             String role,
             String content
-    ){}
+    ) {
+    }
 }

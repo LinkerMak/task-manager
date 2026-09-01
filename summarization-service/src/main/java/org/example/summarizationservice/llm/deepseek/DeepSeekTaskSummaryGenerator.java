@@ -6,11 +6,11 @@ import org.example.summarizationservice.llm.TaskSummaryPrompt;
 import org.example.summarizationservice.llm.TaskSummaryPromptFactory;
 import org.example.summarizationservice.llm.deepseek.dto.DeepSeekChatCompletionRequest;
 import org.example.summarizationservice.llm.deepseek.dto.DeepSeekChatCompletionResponse;
-import org.example.summarizationservice.llm.deepseek.exceptions.DeepSeekApiException;
-import org.example.summarizationservice.llm.deepseek.exceptions.DeepSeekInvalidResponseException;
-import org.example.summarizationservice.llm.deepseek.exceptions.DeepSeekUnavailableException;
+import org.example.summarizationservice.llm.deepseek.exceptions.nonretryable.NonRetryableDeepSeekException;
+import org.example.summarizationservice.llm.deepseek.exceptions.retryable.RetryableDeepSeekException;
 import org.example.summarizationservice.llm.deepseek.properties.DeepSeekProperties;
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -44,15 +44,23 @@ public class DeepSeekTaskSummaryGenerator implements TaskSummaryGenerator {
                     = createResponse(deepSeekRequest);
 
             return extractSummaryText(response);
-        } catch(WebClientResponseException e) {
-            throw new DeepSeekApiException(
-                    e.getStatusCode().value(),
-                    e.getResponseBodyAsString(),
+        } catch (WebClientRequestException e) {
+            throw new RetryableDeepSeekException(
+                    "DeepSeek API request failed due to a network error",
                     e
             );
-        } catch(WebClientRequestException e) {
-            throw new DeepSeekUnavailableException(
-                    "DeepSeek API is unavailable",
+        } catch (WebClientResponseException e) {
+            HttpStatusCode statusCode = e.getStatusCode();
+
+            String message = "DeepSeek API returned HTTP %s: %s"
+                    .formatted(statusCode.value(), e.getResponseBodyAsString());
+
+            if (statusCode.value() == 429 || statusCode.is5xxServerError()) {
+                throw new RetryableDeepSeekException(message, e);
+            }
+
+            throw new NonRetryableDeepSeekException(
+                    message,
                     e
             );
         }
@@ -94,8 +102,8 @@ public class DeepSeekTaskSummaryGenerator implements TaskSummaryGenerator {
                 || response.choices().getFirst().message().content() == null
                 || response.choices().getFirst().message().content().isBlank()) {
 
-            throw new DeepSeekInvalidResponseException(
-                    "DeepSeek response does not contain a summary text"
+            throw new NonRetryableDeepSeekException(
+                    "DeepSeek API returned an empty or malformed completion"
             );
         }
 
@@ -104,6 +112,6 @@ public class DeepSeekTaskSummaryGenerator implements TaskSummaryGenerator {
                 .message()
                 .content()
                 .strip();
-    }    
+    }
 }
 

@@ -16,7 +16,7 @@ public class TaskSummaryPromptFactory {
 
     private static final String SYSTEM_MESSAGE = """
             Ты формируешь краткий ежедневный отчёт для пользователя TODO-приложения.
-
+            
             Правила:
             1. Пиши только на русском языке.
             2. Используй исключительно данные, переданные в пользовательском сообщении.
@@ -31,6 +31,16 @@ public class TaskSummaryPromptFactory {
             8. Максимальная длина ответа — 1 000 символов.
             """;
 
+    private static final String USER_MESSAGE_START = """
+            Сформируй отчёт по задачам за период: %s — %s.
+            
+            Выполненные задачи:
+            %s
+            
+            Незавершённые задачи:
+            %s
+            """;
+
     public TaskSummaryPrompt create(TaskSummaryRequest request) {
         List<TaskSummaryTask> completedTasks = filterTasksFromStatus(
                 request.tasks(),
@@ -42,15 +52,7 @@ public class TaskSummaryPromptFactory {
                 TaskSummaryTaskStatus.TODO
         );
 
-        String userMessage = """
-                Сформируй отчёт по задачам за период: %s — %s.
-
-                Выполненные задачи:
-                %s
-
-                Незавершённые задачи:
-                %s
-                """.formatted(
+        String userMessage = USER_MESSAGE_START.formatted(
                 PERIOD_FORMATTER.format(request.periodStart()),
                 PERIOD_FORMATTER.format(request.periodEnd()),
                 formatTasks(completedTasks),

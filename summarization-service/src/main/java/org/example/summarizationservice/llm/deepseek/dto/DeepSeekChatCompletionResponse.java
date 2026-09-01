@@ -7,5 +7,6 @@ public record DeepSeekChatCompletionResponse(
 ) {
     public record Choice(
             DeepSeekChatCompletionRequest.Message message
-    ){}
+    ) {
+    }
 }

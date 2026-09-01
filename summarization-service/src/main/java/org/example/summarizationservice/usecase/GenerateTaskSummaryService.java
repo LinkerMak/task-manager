@@ -8,14 +8,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GenerateTaskSummaryService implements GenerateTaskSummaryUseCase{
+public class GenerateTaskSummaryService implements GenerateTaskSummaryUseCase {
 
     private final TaskSummaryGenerator taskSummaryGenerator;
 
     @Override
     public TaskSummaryResponse generate(TaskSummaryRequest request) {
-        validatePeriod(request);
-
         String summaryText = taskSummaryGenerator.generate(request);
 
         return new TaskSummaryResponse(
@@ -24,9 +22,4 @@ public class GenerateTaskSummaryService implements GenerateTaskSummaryUseCase{
         );
     }
 
-    private void validatePeriod(TaskSummaryRequest request) {
-        if(!request.periodStart().isBefore(request.periodEnd())) {
-            throw new IllegalArgumentException("periodStart must be before periodEnd");
-        }
-    }
 }
