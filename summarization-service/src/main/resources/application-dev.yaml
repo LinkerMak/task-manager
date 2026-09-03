@@ -32,10 +32,15 @@ spring:
 
 llm:
   deepseek:
-    base-url: https://api.deepseek.com
+    base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
     api-key: ${DEEPSEEK_API_KEY}
     model: deepseek-chat
     connection-timeout: 5s
     response-timeout: 20s
     temperature: 0.2
     max-output-tokens: 400
+
+logging:
+  level:
+    org.example.summarizationservice.llm.deepseek.client: DEBUG
+    feign: DEBUG

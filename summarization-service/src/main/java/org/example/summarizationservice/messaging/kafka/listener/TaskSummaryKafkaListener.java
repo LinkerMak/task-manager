@@ -3,7 +3,7 @@ package org.example.summarizationservice.messaging.kafka.listener;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.summarizationservice.usecase.GenerateTaskSummaryUseCase;
+import org.example.summarizationservice.service.GenerateTaskSummaryService;
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
 import org.example.taskmanager.contracts.summary.TaskSummaryResponse;
 import org.example.taskmanager.contracts.summary.TaskSummaryTopics;
@@ -19,7 +19,7 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 public class TaskSummaryKafkaListener {
 
-    private final GenerateTaskSummaryUseCase generateTaskSummaryUseCase;
+    private final GenerateTaskSummaryService generateTaskSummaryService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @KafkaListener(
@@ -34,7 +34,7 @@ public class TaskSummaryKafkaListener {
         );
 
         TaskSummaryResponse response =
-                generateTaskSummaryUseCase.generate(request);
+                generateTaskSummaryService.generate(request);
 
         kafkaTemplate.send(
                 TaskSummaryTopics.TASK_SUMMARY_RESPONSES,

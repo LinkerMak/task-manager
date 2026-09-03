@@ -1,4 +1,4 @@
-package org.example.summarizationservice.usecase;
+package org.example.summarizationservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.summarizationservice.llm.TaskSummaryGenerator;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GenerateTaskSummaryService implements GenerateTaskSummaryUseCase {
+public class GenerateTaskSummaryServiceImpl implements GenerateTaskSummaryService {
 
     private final TaskSummaryGenerator taskSummaryGenerator;
 

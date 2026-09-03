@@ -1,8 +1,8 @@
-package org.example.summarizationservice.usecase;
+package org.example.summarizationservice.service;
 
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
 import org.example.taskmanager.contracts.summary.TaskSummaryResponse;
 
-public interface GenerateTaskSummaryUseCase {
+public interface GenerateTaskSummaryService {
     TaskSummaryResponse generate(TaskSummaryRequest request);
 }
