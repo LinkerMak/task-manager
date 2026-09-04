@@ -16,13 +16,17 @@ public class DeepSeekFeignConfiguration {
     private static final long RETRY_MAX_DELAY_MILLIS = 1_000L;
     private static final int RETRY_MAX_ATTEMPTS = 2;
 
+    private static final String HEADER_NAME_AUTHORIZATION = "Authorization";
+    private static final String HEADER_VALUE_START_BEARER = "Bearer ";
+
+
     @Bean
     public RequestInterceptor deepSeekAuthorizationInterceptor(
             DeepSeekProperties properties
     ) {
         return requestTemplate -> requestTemplate.header(
-                "Authorization",
-                "Bearer " + properties.apiKey()
+                HEADER_NAME_AUTHORIZATION,
+                HEADER_VALUE_START_BEARER + properties.apiKey()
         );
     }
 
