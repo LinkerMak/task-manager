@@ -22,24 +22,24 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findByIdAndOwner_Id(Long taskId, Long ownerId);
 
     @Query("""
-        select DailyReportTaskRow(
-            task.owner.id,
-            task.owner.email,
-            task.id,
-            task.title,
-            task.description,
-            task.status,
-            task.completedAt
-        )
-        from Task task
-        where task.status = :todoStatus
-           or (
-               task.status = :doneStatus
-               and task.completedAt >= :periodStart
-               and task.completedAt < :periodEnd
-           )
-        order by task.owner.id, task.id
-        """)
+            select new com.example.task_manager_backend.dto.repository.dailyreport.DailyReportTaskRow(
+                task.owner.id,
+                task.owner.email,
+                task.id,
+                task.title,
+                task.description,
+                task.status,
+                task.completedAt
+            )
+            from Task task
+            where task.status = :todoStatus
+               or (
+                   task.status = :doneStatus
+                   and task.completedAt >= :periodStart
+                   and task.completedAt < :periodEnd
+               )
+            order by task.owner.id, task.id
+            """)
     List<DailyReportTaskRow> findDailyReportTaskRows(
             @Param("todoStatus") TaskStatus todoStatus,
             @Param("doneStatus") TaskStatus doneStatus,

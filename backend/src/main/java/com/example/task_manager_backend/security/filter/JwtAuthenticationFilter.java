@@ -28,6 +28,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            return true;
+        }
+
+        String authorizationHeader = request.getHeader(
+                HttpHeaders.AUTHORIZATION
+        );
+
+        return authorizationHeader == null
+                || !authorizationHeader.startsWith(
+                SecurityConstants.BEARER_TOKEN_PREFIX
+        );
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -41,14 +57,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader(
                 HttpHeaders.AUTHORIZATION
         );
-
-        if (authorizationHeader == null ||
-                !authorizationHeader.startsWith(
-                        SecurityConstants.BEARER_TOKEN_PREFIX
-                )) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         String accessToken = authorizationHeader.substring(
                 SecurityConstants.BEARER_TOKEN_PREFIX.length()

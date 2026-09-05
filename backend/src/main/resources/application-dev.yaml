@@ -7,6 +7,9 @@ spring:
       secret: ${JWT_SECRET}
       access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:PT15M}
 
+    internal-api:
+      scheduler-api-key: ${SCHEDULER_API_KEY:local-scheduler-api-key}
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
