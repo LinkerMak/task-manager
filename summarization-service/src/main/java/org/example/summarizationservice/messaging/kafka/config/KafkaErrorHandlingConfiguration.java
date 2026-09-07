@@ -3,7 +3,7 @@ package org.example.summarizationservice.messaging.kafka.config;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.TopicPartition;
 import org.example.summarizationservice.llm.deepseek.exceptions.nonretryable.NonRetryableDeepSeekException;
-import org.example.taskmanager.contracts.summary.TaskSummaryTopics;
+import org.example.taskmanager.contracts.summary.topics.TaskSummaryTopics;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;

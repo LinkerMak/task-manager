@@ -18,3 +18,11 @@ scheduler:
   summary:
     reply-group-id: scheduler-service-summary-replies
     reply-timeout: 30s
+
+  daily-report-source-rpc:
+    reply-group-id: scheduler.daily-report-source-replies
+    reply-timeout: 15s
+
+  daily-report-scheduling:
+    cron: "*/30 * * * * *"
+    zone: "UTC"

@@ -1,12 +1,12 @@
-package org.example.scheduler.client;
+package org.example.scheduler.client.tasksummary;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.example.scheduler.client.exceptions.TaskSummaryUnavailableException;
+import org.example.scheduler.client.tasksummary.exceptions.TaskSummaryUnavailableException;
 import org.example.scheduler.config.SummaryRpcProperties;
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
 import org.example.taskmanager.contracts.summary.TaskSummaryResponse;
-import org.example.taskmanager.contracts.summary.TaskSummaryTopics;
+import org.example.taskmanager.contracts.summary.topics.TaskSummaryTopics;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.stereotype.Component;
 

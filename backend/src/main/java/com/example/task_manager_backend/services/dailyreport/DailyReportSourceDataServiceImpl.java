@@ -1,13 +1,14 @@
 package com.example.task_manager_backend.services.dailyreport;
 
 import com.example.task_manager_backend.dto.repository.dailyreport.DailyReportTaskRow;
-import com.example.task_manager_backend.dto.web.dailyreport.DailyReportSourceDataResponse;
-import com.example.task_manager_backend.dto.web.dailyreport.DailyReportTaskResponse;
-import com.example.task_manager_backend.dto.web.dailyreport.DailyReportUserResponse;
 import com.example.task_manager_backend.models.task.TaskStatus;
 import com.example.task_manager_backend.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
+import org.example.taskmanager.contracts.dailyreport.DailyReportUserData;
+import org.example.taskmanager.contracts.task.TaskSnapshot;
+import org.example.taskmanager.contracts.task.TaskSnapshotStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,7 @@ public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataSe
                 periodEnd
         );
 
-        List<DailyReportUserResponse> userResponses =
+        List<DailyReportUserData> userResponses =
                 groupTasksByUser(taskRows);
 
         log.info(
@@ -54,7 +55,7 @@ public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataSe
         );
     }
 
-    List<DailyReportUserResponse> groupTasksByUser(List<DailyReportTaskRow> taskRows) {
+    List<DailyReportUserData> groupTasksByUser(List<DailyReportTaskRow> taskRows) {
         Map<Long, DailyReportUserAccumulator> usersById =
                 new LinkedHashMap<>();
 
@@ -69,11 +70,11 @@ public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataSe
                     );
 
             user.tasks().add(
-                    new DailyReportTaskResponse(
+                    new TaskSnapshot(
                             taskRow.taskId(),
                             taskRow.title(),
                             taskRow.description(),
-                            taskRow.status(),
+                            toTaskSnapshotStatus(taskRow.status()),
                             taskRow.completedAt()
                     )
             );
@@ -87,7 +88,7 @@ public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataSe
     private record DailyReportUserAccumulator(
             Long userId,
             String email,
-            List<DailyReportTaskResponse> tasks
+            List<TaskSnapshot> tasks
     ) {
         private DailyReportUserAccumulator(
                 Long userId,
@@ -96,13 +97,22 @@ public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataSe
             this(userId, email, new ArrayList<>());
         }
 
-        private DailyReportUserResponse toResponse() {
-            return new DailyReportUserResponse(
+        private DailyReportUserData toResponse() {
+            return new DailyReportUserData(
                     userId,
                     email,
                     List.copyOf(tasks)
             );
         }
+    }
+
+    private TaskSnapshotStatus toTaskSnapshotStatus(
+            TaskStatus status
+    ) {
+        return switch (status) {
+            case TODO -> TaskSnapshotStatus.TODO;
+            case DONE -> TaskSnapshotStatus.DONE;
+        };
     }
 
     private void validatePeriod(OffsetDateTime periodStart, OffsetDateTime periodEnd) {

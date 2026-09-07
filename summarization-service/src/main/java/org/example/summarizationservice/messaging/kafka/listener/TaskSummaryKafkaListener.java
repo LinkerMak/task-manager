@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.summarizationservice.service.GenerateTaskSummaryService;
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
 import org.example.taskmanager.contracts.summary.TaskSummaryResponse;
-import org.example.taskmanager.contracts.summary.TaskSummaryTopics;
+import org.example.taskmanager.contracts.summary.topics.TaskSummaryTopics;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;

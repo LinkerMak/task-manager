@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.example.taskmanager.contracts.summary.validation.ValidSummaryPeriod;
+import org.example.taskmanager.contracts.task.TaskSnapshot;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -21,6 +22,6 @@ public record TaskSummaryRequest(
         OffsetDateTime periodEnd,
 
         @NotEmpty
-        List<@NotNull @Valid TaskSummaryTask> tasks
+        List<@NotNull @Valid TaskSnapshot> tasks
 ) {
 }

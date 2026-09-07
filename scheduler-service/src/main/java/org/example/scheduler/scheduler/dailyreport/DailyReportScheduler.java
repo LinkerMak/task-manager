@@ -1,0 +1,26 @@
+package org.example.scheduler.scheduler.dailyreport;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class DailyReportScheduler {
+
+    private final DailyReportJob dailyReportJob;
+
+    @Scheduled(
+            cron = "${scheduler.daily-report-scheduling.cron}",
+            zone = "${scheduler.daily-report-scheduling.zone}"
+    )
+    public void scheduleDailyReport() {
+        log.info("Scheduled daily report execution started");
+
+        dailyReportJob.run();
+
+        log.info("Scheduled daily report execution finished");
+    }
+}

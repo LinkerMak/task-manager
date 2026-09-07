@@ -1,8 +1,8 @@
 package org.example.summarizationservice.llm;
 
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
-import org.example.taskmanager.contracts.summary.TaskSummaryTask;
-import org.example.taskmanager.contracts.summary.TaskSummaryTaskStatus;
+import org.example.taskmanager.contracts.task.TaskSnapshot;
+import org.example.taskmanager.contracts.task.TaskSnapshotStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
@@ -42,14 +42,14 @@ public class TaskSummaryPromptFactory {
             """;
 
     public TaskSummaryPrompt create(TaskSummaryRequest request) {
-        List<TaskSummaryTask> completedTasks = filterTasksFromStatus(
+        List<TaskSnapshot> completedTasks = filterTasksFromStatus(
                 request.tasks(),
-                TaskSummaryTaskStatus.DONE
+                TaskSnapshotStatus.DONE
         );
 
-        List<TaskSummaryTask> unfinishedTasks = filterTasksFromStatus(
+        List<TaskSnapshot> unfinishedTasks = filterTasksFromStatus(
                 request.tasks(),
-                TaskSummaryTaskStatus.TODO
+                TaskSnapshotStatus.TODO
         );
 
         String userMessage = USER_MESSAGE_START.formatted(
@@ -65,13 +65,13 @@ public class TaskSummaryPromptFactory {
         );
     }
 
-    private List<TaskSummaryTask> filterTasksFromStatus(List<TaskSummaryTask> tasks, TaskSummaryTaskStatus status) {
+    private List<TaskSnapshot> filterTasksFromStatus(List<TaskSnapshot> tasks, TaskSnapshotStatus status) {
         return tasks.stream()
                 .filter(task -> task.status() == status)
                 .toList();
     }
 
-    private String formatTasks(List<TaskSummaryTask> tasks) {
+    private String formatTasks(List<TaskSnapshot> tasks) {
         if (tasks.isEmpty()) {
             return "Нет задач.";
         }
@@ -79,7 +79,7 @@ public class TaskSummaryPromptFactory {
         StringBuilder result = new StringBuilder();
 
         for (int index = 0; index < tasks.size(); index++) {
-            TaskSummaryTask task = tasks.get(index);
+            TaskSnapshot task = tasks.get(index);
 
             result.append(index + 1)
                     .append(". ")

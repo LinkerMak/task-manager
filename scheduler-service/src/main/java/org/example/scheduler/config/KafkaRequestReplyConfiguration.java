@@ -2,9 +2,12 @@ package org.example.scheduler.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataRequest;
+import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
+import org.example.taskmanager.contracts.dailyreport.topics.DailyReportTopics;
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
 import org.example.taskmanager.contracts.summary.TaskSummaryResponse;
-import org.example.taskmanager.contracts.summary.TaskSummaryTopics;
+import org.example.taskmanager.contracts.summary.topics.TaskSummaryTopics;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +24,80 @@ import java.util.Map;
 
 @Configuration
 public class KafkaRequestReplyConfiguration {
+
+    @Bean
+    ConsumerFactory<String, DailyReportSourceDataResponse>
+    dailyReportSourceReplyConsumerFactory(
+            KafkaProperties kafkaProperties
+    ) {
+        Map<String, Object> properties = new HashMap<>(
+                kafkaProperties.buildConsumerProperties()
+        );
+
+        properties.put(
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class
+        );
+        properties.put(
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                JsonDeserializer.class
+        );
+
+        properties.put(
+                JsonDeserializer.VALUE_DEFAULT_TYPE,
+                DailyReportSourceDataResponse.class.getName()
+        );
+        properties.put(
+                JsonDeserializer.USE_TYPE_INFO_HEADERS,
+                false
+        );
+        properties.put(
+                JsonDeserializer.TRUSTED_PACKAGES,
+                DailyReportSourceDataResponse.class.getPackageName()
+        );
+
+        return new DefaultKafkaConsumerFactory<>(properties);
+    }
+
+    @Bean
+    ConcurrentMessageListenerContainer<String, DailyReportSourceDataResponse>
+    dailyReportSourceReplyContainer(
+            ConsumerFactory<String, DailyReportSourceDataResponse>
+                    dailyReportSourceReplyConsumerFactory,
+            DailyReportSourceRpcProperties properties
+    ) {
+        ConcurrentMessageListenerContainer<String, DailyReportSourceDataResponse> container =
+                new ConcurrentMessageListenerContainer<>(
+                        dailyReportSourceReplyConsumerFactory,
+                        new ContainerProperties(
+                                DailyReportTopics.SOURCE_DATA_REPLY
+                        )
+                );
+
+        container.getContainerProperties()
+                .setGroupId(properties.replyGroupId());
+
+        container.setAutoStartup(false);
+
+        return container;
+    }
+
+    @Bean
+    ReplyingKafkaTemplate<String, DailyReportSourceDataRequest, DailyReportSourceDataResponse> dailyReportSourceReplyingKafkaTemplate(
+            ProducerFactory<String, DailyReportSourceDataRequest> producerFactory,
+            ConcurrentMessageListenerContainer<String, DailyReportSourceDataResponse> dailyReportSourceReplyContainer,
+            DailyReportSourceRpcProperties properties
+    ) {
+        ReplyingKafkaTemplate<String, DailyReportSourceDataRequest, DailyReportSourceDataResponse> kafkaTemplate =
+                new ReplyingKafkaTemplate<>(
+                        producerFactory,
+                        dailyReportSourceReplyContainer
+                );
+
+        kafkaTemplate.setDefaultReplyTimeout(properties.replyTimeout());
+
+        return kafkaTemplate;
+    }
 
     @Bean
     ConsumerFactory<String, TaskSummaryResponse> taskSummaryReplyConsumerFactory(
@@ -56,7 +133,7 @@ public class KafkaRequestReplyConfiguration {
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, TaskSummaryResponse> taskSummaryReplayContainer(
+    ConcurrentMessageListenerContainer<String, TaskSummaryResponse> taskSummaryReplyContainer(
             ConsumerFactory<String, TaskSummaryResponse> taskSummaryReplyConsumerFactory,
             SummaryRpcProperties properties
     ) {

@@ -1,4 +1,4 @@
-package com.example.task_manager_backend.messaging.producer;
+package com.example.task_manager_backend.messaging.email;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

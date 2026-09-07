@@ -1,6 +1,5 @@
 package com.example.task_manager_backend.security.config;
 
-import com.example.task_manager_backend.security.config.dailyreport.filter.InternalApiKeyAuthenticationFilter;
 import com.example.task_manager_backend.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,15 +20,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtAuthenticationFilter jwtAuthenticationFilter,
-                                                   InternalApiKeyAuthenticationFilter internalApiKeyAuthenticationFilter,
                                                    AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
         configureStatelessSecurity(http);
 
-        configureAuthenticationFilters(
-                http,
-                internalApiKeyAuthenticationFilter,
-                jwtAuthenticationFilter
-        );
+        configureJwtAuthenticationFilter(http, jwtAuthenticationFilter);
 
         configureAuthorization(http);
         configureAuthenticationEntryPoint(http, authenticationEntryPoint);
@@ -46,19 +40,11 @@ public class SecurityConfig {
                 );
     }
 
-    private void configureAuthenticationFilters(
-            HttpSecurity http,
-            InternalApiKeyAuthenticationFilter internalApiKeyAuthenticationFilter,
-            JwtAuthenticationFilter jwtAuthenticationFilter
-    ) {
+    private void configureJwtAuthenticationFilter(HttpSecurity http,
+                                                  JwtAuthenticationFilter jwtAuthenticationFilter) {
         http.addFilterBefore(
-                internalApiKeyAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class
-        );
-
-        http.addFilterAfter(
                 jwtAuthenticationFilter,
-                InternalApiKeyAuthenticationFilter.class
+                UsernamePasswordAuthenticationFilter.class
         );
     }
 
@@ -70,10 +56,6 @@ public class SecurityConfig {
                                 HttpMethod.POST,
                                 SecurityPaths.PUBLIC_PATHS.toArray(new String[0])
                         ).permitAll()
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/internal/daily-reports/source-data"
-                        ).hasAuthority(InternalApiKeyAuthenticationFilter.SCHEDULER_AUTHORITY)
                         .anyRequest().authenticated()
                 );
     }

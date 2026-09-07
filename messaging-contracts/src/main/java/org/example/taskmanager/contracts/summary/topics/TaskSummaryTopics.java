@@ -1,4 +1,4 @@
-package org.example.taskmanager.contracts.summary;
+package org.example.taskmanager.contracts.summary.topics;
 
 public final class TaskSummaryTopics {
 

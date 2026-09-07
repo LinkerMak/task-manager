@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import static com.example.task_manager_backend.advices.messages.ExceptionMessages.*;
 
 @Slf4j
-@RestControllerAdvice()
+@RestControllerAdvice
 public class ControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

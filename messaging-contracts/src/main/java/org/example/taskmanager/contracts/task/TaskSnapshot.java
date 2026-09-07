@@ -1,4 +1,4 @@
-package org.example.taskmanager.contracts.summary;
+package org.example.taskmanager.contracts.task;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 
-public record TaskSummaryTask(
+public record TaskSnapshot(
         @NotNull
         Long id,
 
@@ -18,7 +18,7 @@ public record TaskSummaryTask(
        String description,
 
        @NotNull
-       TaskSummaryTaskStatus status,
+        TaskSnapshotStatus status,
 
        OffsetDateTime completedAt
 ) {

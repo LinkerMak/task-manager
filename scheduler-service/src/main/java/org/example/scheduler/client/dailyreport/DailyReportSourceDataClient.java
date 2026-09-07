@@ -1,15 +1,15 @@
-package com.example.task_manager_backend.services.dailyreport;
-
+package org.example.scheduler.client.dailyreport;
 
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
 
 import java.time.OffsetDateTime;
 
-public interface DailyReportSourceDataService {
+public interface DailyReportSourceDataClient {
 
-    DailyReportSourceDataResponse getDataSource(
+    DailyReportSourceDataResponse getSourceData(
             OffsetDateTime periodStart,
             OffsetDateTime periodEnd
     );
+
 
 }
