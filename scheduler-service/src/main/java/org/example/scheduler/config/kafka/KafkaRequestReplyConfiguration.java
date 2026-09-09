@@ -1,10 +1,13 @@
-package org.example.scheduler.config;
+package org.example.scheduler.config.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.example.scheduler.config.properties.DailyReportSourceRpcProperties;
+import org.example.scheduler.config.properties.SummaryRpcProperties;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataRequest;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
 import org.example.taskmanager.contracts.dailyreport.topics.DailyReportTopics;
+import org.example.taskmanager.contracts.email.EmailSendingTask;
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
 import org.example.taskmanager.contracts.summary.TaskSummaryResponse;
 import org.example.taskmanager.contracts.summary.topics.TaskSummaryTopics;
@@ -13,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
@@ -24,6 +28,13 @@ import java.util.Map;
 
 @Configuration
 public class KafkaRequestReplyConfiguration {
+
+    @Bean
+    KafkaTemplate<String, EmailSendingTask> emailSendingTaskKafkaTemplate(
+            ProducerFactory<String, EmailSendingTask> producerFactory
+    ) {
+        return new KafkaTemplate<>(producerFactory);
+    }
 
     @Bean
     ConsumerFactory<String, DailyReportSourceDataResponse>

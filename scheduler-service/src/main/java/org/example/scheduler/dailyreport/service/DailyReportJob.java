@@ -1,10 +1,11 @@
-package org.example.scheduler.scheduler.dailyreport;
+package org.example.scheduler.dailyreport.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.scheduler.client.dailyreport.DailyReportSourceDataClient;
 import org.example.scheduler.client.dailyreport.exception.DailyReportSourceDataUnavailableException;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
+import org.example.taskmanager.contracts.dailyreport.DailyReportUserData;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -17,6 +18,8 @@ import java.time.ZoneOffset;
 public class DailyReportJob {
 
     private final DailyReportSourceDataClient dailyReportSourceDataClient;
+
+    private final DailyReportUserProcessor dailyReportUserProcessor;
 
     private final Clock clock;
 
@@ -53,13 +56,10 @@ public class DailyReportJob {
                     sourceData.users().size()
             );
 
-            sourceData.users().forEach(user ->
-                log.info(
-                        "Daily report candidate: userId={}, email={}, tasksCount={}",
-                        user.userId(),
-                        user.email(),
-                        user.tasks().size()
-                )
+            processUsers(
+                    sourceData.users(),
+                    sourceData.periodStart(),
+                    sourceData.periodEnd()
             );
         } catch(DailyReportSourceDataUnavailableException e) {
             log.error(
@@ -68,6 +68,31 @@ public class DailyReportJob {
                     periodEnd,
                     e
             );
+        }
+    }
+
+    private void processUsers(
+            Iterable<DailyReportUserData> users,
+            OffsetDateTime periodStart,
+            OffsetDateTime periodEnd
+    ) {
+        for (DailyReportUserData user : users) {
+            try {
+                dailyReportUserProcessor.process(
+                        user,
+                        periodStart,
+                        periodEnd
+                );
+            } catch (Exception e) {
+                log.error(
+                        "Failed to process daily report for user: userId={}, recipientEmail={}, periodStart={}, periodEnd={}",
+                        user.userId(),
+                        user.email(),
+                        periodStart,
+                        periodEnd,
+                        e
+                );
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.example.scheduler.client.dailyreport.exception.DailyReportSourceDataUnavailableException;
-import org.example.scheduler.config.DailyReportSourceRpcProperties;
+import org.example.scheduler.config.properties.DailyReportSourceRpcProperties;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataRequest;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
 import org.example.taskmanager.contracts.dailyreport.topics.DailyReportTopics;
@@ -34,7 +34,6 @@ public class KafkaDailyReportSourceDataClient implements DailyReportSourceDataCl
     @Override
     public DailyReportSourceDataResponse getSourceData(OffsetDateTime periodStart, OffsetDateTime periodEnd) {
         validatePeriod(periodStart, periodEnd);
-
 
         DailyReportSourceDataRequest request = new DailyReportSourceDataRequest(
                 periodStart,

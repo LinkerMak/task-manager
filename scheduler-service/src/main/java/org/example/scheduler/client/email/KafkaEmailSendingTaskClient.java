@@ -10,9 +10,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KafkaEmailSendingTaskProducer implements EmailSendingTaskClient{
+public class KafkaEmailSendingTaskClient implements EmailSendingTaskClient{
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private final KafkaTemplate<String, EmailSendingTask> kafkaTemplate;
 
     @Override

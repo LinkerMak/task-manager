@@ -1,4 +1,4 @@
-package org.example.scheduler.config;
+package org.example.scheduler.config.properties;
 
 
 import jakarta.validation.constraints.NotBlank;

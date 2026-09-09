@@ -3,7 +3,7 @@ package org.example.scheduler.client.tasksummary;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.example.scheduler.client.tasksummary.exceptions.TaskSummaryUnavailableException;
-import org.example.scheduler.config.SummaryRpcProperties;
+import org.example.scheduler.config.properties.SummaryRpcProperties;
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;
 import org.example.taskmanager.contracts.summary.TaskSummaryResponse;
 import org.example.taskmanager.contracts.summary.topics.TaskSummaryTopics;

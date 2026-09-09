@@ -1,4 +1,4 @@
-package org.example.scheduler.scheduler.dailyreport.config;
+package org.example.scheduler.dailyreport.scheduler.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
