@@ -1,7 +1,7 @@
-package org.example.scheduler.dailyreport.email.composer;
+package org.example.scheduler.service.dailyreport.processor.email.composer;
 
 import lombok.RequiredArgsConstructor;
-import org.example.scheduler.dailyreport.message.id.factory.DailyReportMessageIdFactory;
+import org.example.scheduler.service.dailyreport.processor.message.id.factory.DailyReportMessageIdFactory;
 import org.example.taskmanager.contracts.dailyreport.DailyReportUserData;
 import org.example.taskmanager.contracts.email.EmailSendingTask;
 import org.springframework.stereotype.Component;

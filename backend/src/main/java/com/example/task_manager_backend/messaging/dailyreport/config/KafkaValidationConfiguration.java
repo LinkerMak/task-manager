@@ -1,4 +1,4 @@
-package org.example.summarizationservice.messaging.kafka.config;
+package com.example.task_manager_backend.messaging.dailyreport.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -8,13 +8,13 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
 @RequiredArgsConstructor
-public class KafkaValidatorConfiguration implements KafkaListenerConfigurer {
+public class KafkaValidationConfiguration implements KafkaListenerConfigurer {
 
     private final LocalValidatorFactoryBean validator;
 
     @Override
     public void configureKafkaListeners(KafkaListenerEndpointRegistrar registrar) {
-
         registrar.setValidator(validator);
     }
 }
+

@@ -1,10 +1,10 @@
-package org.example.scheduler.dailyreport.service;
+package org.example.scheduler.service.dailyreport.processor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.scheduler.client.email.EmailSendingTaskClient;
 import org.example.scheduler.client.tasksummary.TaskSummaryClient;
-import org.example.scheduler.dailyreport.email.composer.DailyReportEmailComposer;
+import org.example.scheduler.service.dailyreport.processor.email.composer.DailyReportEmailComposer;
 import org.example.taskmanager.contracts.dailyreport.DailyReportUserData;
 import org.example.taskmanager.contracts.email.EmailSendingTask;
 import org.example.taskmanager.contracts.summary.TaskSummaryRequest;

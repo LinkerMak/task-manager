@@ -1,9 +1,10 @@
-package org.example.scheduler.dailyreport.service;
+package org.example.scheduler.service.dailyreport.job;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.scheduler.client.dailyreport.DailyReportSourceDataClient;
 import org.example.scheduler.client.dailyreport.exception.DailyReportSourceDataUnavailableException;
+import org.example.scheduler.service.dailyreport.processor.DailyReportUserProcessor;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
 import org.example.taskmanager.contracts.dailyreport.DailyReportUserData;
 import org.springframework.stereotype.Service;

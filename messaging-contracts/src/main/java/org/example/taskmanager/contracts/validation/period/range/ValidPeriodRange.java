@@ -1,4 +1,4 @@
-package org.example.taskmanager.contracts.summary.validation;
+package org.example.taskmanager.contracts.validation.period.range;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -13,8 +13,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Target(TYPE)
 @Retention(RUNTIME)
-@Constraint(validatedBy = SummaryPeriodValidator.class)
-public @interface ValidSummaryPeriod {
+@Constraint(validatedBy = PeriodRangeValidator.class)
+public @interface ValidPeriodRange {
 
     String message() default "periodStart must be before periodEnd";
 

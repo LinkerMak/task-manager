@@ -1,4 +1,4 @@
-package org.example.scheduler.dailyreport.message.id.factory;
+package org.example.scheduler.service.dailyreport.processor.message.id.factory;
 
 import org.springframework.stereotype.Component;
 

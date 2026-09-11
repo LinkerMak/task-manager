@@ -13,4 +13,6 @@ public final class SecurityPaths {
             "/auth/login",
             "/auth/logout"
     );
+
+    public final String ERROR_PATH = "/error";
 }

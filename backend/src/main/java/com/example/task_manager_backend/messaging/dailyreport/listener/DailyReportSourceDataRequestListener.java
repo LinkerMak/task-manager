@@ -1,12 +1,14 @@
 package com.example.task_manager_backend.messaging.dailyreport.listener;
 
 import com.example.task_manager_backend.services.dailyreport.DailyReportSourceDataService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataRequest;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
 import org.example.taskmanager.contracts.dailyreport.topics.DailyReportTopics;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +28,7 @@ public class DailyReportSourceDataRequestListener {
     )
     @SendTo
     public DailyReportSourceDataResponse handle(
-            DailyReportSourceDataRequest request
+            @Valid @Payload DailyReportSourceDataRequest request
     ) {
         log.info(
                 "Received daily report source data request: periodStart={}, periodEnd={}",

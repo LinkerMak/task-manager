@@ -1,4 +1,4 @@
-package org.example.scheduler.dailyreport.scheduler.config;
+package org.example.scheduler.scheduler.dailyreport.config;
 
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;

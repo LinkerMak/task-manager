@@ -1,11 +1,13 @@
 package org.example.scheduler.client.dailyreport;
 
+import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.example.scheduler.client.dailyreport.exception.DailyReportSourceDataUnavailableException;
 import org.example.scheduler.config.properties.DailyReportSourceRpcProperties;
+import org.example.scheduler.validation.ContractValidator;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataRequest;
 import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
 import org.example.taskmanager.contracts.dailyreport.topics.DailyReportTopics;
@@ -14,6 +16,7 @@ import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -31,14 +34,16 @@ public class KafkaDailyReportSourceDataClient implements DailyReportSourceDataCl
 
     private final DailyReportSourceRpcProperties dailyReportProperties;
 
+    private final ContractValidator contractValidator;
+
     @Override
     public DailyReportSourceDataResponse getSourceData(OffsetDateTime periodStart, OffsetDateTime periodEnd) {
-        validatePeriod(periodStart, periodEnd);
-
         DailyReportSourceDataRequest request = new DailyReportSourceDataRequest(
                 periodStart,
                 periodEnd
         );
+
+        validateRequest(request);
 
         log.info(
                 "Requesting daily report source data: periodStart={}, periodEnd={}",
@@ -114,21 +119,19 @@ public class KafkaDailyReportSourceDataClient implements DailyReportSourceDataCl
         }
     }
 
-    private void validatePeriod(
-            OffsetDateTime periodStart,
-            OffsetDateTime periodEnd
-    ) {
-        if (periodStart == null || periodEnd == null) {
-            throw new IllegalArgumentException(
-                    "Daily report period boundaries must not be null"
-            );
+    private void validateRequest(DailyReportSourceDataRequest request) {
+        Set<ConstraintViolation<DailyReportSourceDataRequest>> violations =
+                contractValidator.validate(request);
+
+        if(violations.isEmpty()) {
+            return;
         }
 
-        if (!periodStart.isBefore(periodEnd)) {
-            throw new IllegalArgumentException(
-                    "Daily report period start must be before period end"
-            );
-        }
+        String violationsMessage = contractValidator.formatViolations(violations);
+
+        throw new IllegalArgumentException(
+              "Invalid daily report source data request: " + violationsMessage
+        );
     }
 
     private void validateResponse(
@@ -138,7 +141,21 @@ public class KafkaDailyReportSourceDataClient implements DailyReportSourceDataCl
     ) {
         if (response == null) {
             throw new DailyReportSourceDataUnavailableException(
-                    "Backend returned an empty daily report source data response",
+                    "Daily report source service returned an empty response",
+                    null
+            );
+        }
+
+        Set<ConstraintViolation<DailyReportSourceDataResponse>> violations =
+                contractValidator.validate(response);
+
+        if (!violations.isEmpty()) {
+            String violationsMessage =
+                    contractValidator.formatViolations(violations);
+
+            throw new DailyReportSourceDataUnavailableException(
+                    "Daily report source service returned an invalid response: "
+                            + violationsMessage,
                     null
             );
         }
@@ -146,7 +163,7 @@ public class KafkaDailyReportSourceDataClient implements DailyReportSourceDataCl
         if (!expectedPeriodStart.equals(response.periodStart())
                 || !expectedPeriodEnd.equals(response.periodEnd())) {
             throw new DailyReportSourceDataUnavailableException(
-                    "Backend returned daily report source data for an unexpected period",
+                    "Daily report source service returned data for an unexpected period",
                     null
             );
         }

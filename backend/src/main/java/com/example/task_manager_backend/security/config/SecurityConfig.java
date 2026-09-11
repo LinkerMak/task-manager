@@ -51,7 +51,7 @@ public class SecurityConfig {
     private void configureAuthorization(HttpSecurity http) {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(SecurityPaths.ERROR_PATH).permitAll()
                         .requestMatchers(
                                 HttpMethod.POST,
                                 SecurityPaths.PUBLIC_PATHS.toArray(new String[0])

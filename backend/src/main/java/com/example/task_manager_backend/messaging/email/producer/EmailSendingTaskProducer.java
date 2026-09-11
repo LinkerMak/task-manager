@@ -1,4 +1,4 @@
-package com.example.task_manager_backend.messaging.email;
+package com.example.task_manager_backend.messaging.email.producer;
 
 import org.example.taskmanager.contracts.email.EmailSendingTask;
 

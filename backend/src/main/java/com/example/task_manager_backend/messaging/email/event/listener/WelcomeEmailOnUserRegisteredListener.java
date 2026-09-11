@@ -1,6 +1,6 @@
-package com.example.task_manager_backend.messaging.email.listener;
+package com.example.task_manager_backend.messaging.email.event.listener;
 
-import com.example.task_manager_backend.messaging.email.EmailSendingTaskProducer;
+import com.example.task_manager_backend.messaging.email.producer.EmailSendingTaskProducer;
 import com.example.task_manager_backend.services.registration.event.UserRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
