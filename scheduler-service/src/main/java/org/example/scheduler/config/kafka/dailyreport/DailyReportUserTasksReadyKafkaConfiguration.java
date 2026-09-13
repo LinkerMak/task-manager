@@ -1,32 +1,32 @@
-package com.example.task_manager_backend.messaging.dailyreport.config;
+package org.example.scheduler.config.kafka.dailyreport;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.example.taskmanager.contracts.dailyreport.DailyReportGenerationRequest;
-import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
+import org.example.taskmanager.contracts.dailyreport.DailyReportUserTasksReady;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
-import tools.jackson.databind.json.JsonMapper;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class DailyReportKafkaConfiguration {
+public class DailyReportUserTasksReadyKafkaConfiguration {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<
             String,
-            DailyReportGenerationRequest
-            > dailyReportKafkaListenerContainerFactory(
+            DailyReportUserTasksReady
+            > dailyReportUserTasksReadyKafkaListenerContainerFactory(
             KafkaProperties kafkaProperties,
-            JsonMapper jsonMapper
+            ObjectMapper objectMapper
     ) {
         Map<String, Object> consumerProperties = new HashMap<>(
-                kafkaProperties.buildConsumerProperties()
+                kafkaProperties.buildConsumerProperties(null)
         );
 
         consumerProperties.put(
@@ -34,21 +34,20 @@ public class DailyReportKafkaConfiguration {
                 StringDeserializer.class
         );
 
-        JacksonJsonDeserializer<DailyReportGenerationRequest>
-                valueDeserializer =
-                new JacksonJsonDeserializer<>(
-                        DailyReportGenerationRequest.class,
-                        jsonMapper,
+        JsonDeserializer<DailyReportUserTasksReady> valueDeserializer =
+                new JsonDeserializer<>(
+                        DailyReportUserTasksReady.class,
+                        objectMapper,
                         false
                 );
 
         valueDeserializer.addTrustedPackages(
-                DailyReportGenerationRequest.class.getPackageName()
+                DailyReportUserTasksReady.class.getPackageName()
         );
 
         DefaultKafkaConsumerFactory<
                 String,
-                DailyReportGenerationRequest
+                DailyReportUserTasksReady
                 > consumerFactory =
                 new DefaultKafkaConsumerFactory<>(
                         consumerProperties,
@@ -58,7 +57,7 @@ public class DailyReportKafkaConfiguration {
 
         ConcurrentKafkaListenerContainerFactory<
                 String,
-                DailyReportGenerationRequest
+                DailyReportUserTasksReady
                 > factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 

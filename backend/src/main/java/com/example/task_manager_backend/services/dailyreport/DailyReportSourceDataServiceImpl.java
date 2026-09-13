@@ -5,8 +5,7 @@ import com.example.task_manager_backend.models.task.TaskStatus;
 import com.example.task_manager_backend.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.taskmanager.contracts.dailyreport.DailyReportSourceDataResponse;
-import org.example.taskmanager.contracts.dailyreport.DailyReportUserData;
+import org.example.taskmanager.contracts.dailyreport.DailyReportUserTasksReady;
 import org.example.taskmanager.contracts.task.TaskSnapshot;
 import org.example.taskmanager.contracts.task.TaskSnapshotStatus;
 import org.springframework.stereotype.Service;
@@ -22,40 +21,49 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataService {
+public class DailyReportSourceDataServiceImpl
+        implements DailyReportSourceDataService {
 
     private final TaskRepository taskRepository;
 
     @Override
-    public DailyReportSourceDataResponse getDataSource(OffsetDateTime periodStart, OffsetDateTime periodEnd) {
+    public List<DailyReportUserTasksReady> getUsersWithTasks(
+            OffsetDateTime periodStart,
+            OffsetDateTime periodEnd
+    ) {
         validatePeriod(periodStart, periodEnd);
 
-        List<DailyReportTaskRow> taskRows = taskRepository.findDailyReportTaskRows(
-                TaskStatus.TODO,
-                TaskStatus.DONE,
-                periodStart,
-                periodEnd
-        );
+        List<DailyReportTaskRow> taskRows =
+                taskRepository.findDailyReportTaskRows(
+                        TaskStatus.TODO,
+                        TaskStatus.DONE,
+                        periodStart,
+                        periodEnd
+                );
 
-        List<DailyReportUserData> userResponses =
-                groupTasksByUser(taskRows);
+        List<DailyReportUserTasksReady> users =
+                groupTasksByUser(
+                        taskRows,
+                        periodStart,
+                        periodEnd
+                );
 
         log.info(
                 "Daily report source data retrieved: periodStart={}, periodEnd={}, usersCount={}, tasksCount={}",
                 periodStart,
                 periodEnd,
-                userResponses.size(),
+                users.size(),
                 taskRows.size()
         );
 
-        return new DailyReportSourceDataResponse(
-                periodStart,
-                periodEnd,
-                userResponses
-        );
+        return users;
     }
 
-    List<DailyReportUserData> groupTasksByUser(List<DailyReportTaskRow> taskRows) {
+    List<DailyReportUserTasksReady> groupTasksByUser(
+            List<DailyReportTaskRow> taskRows,
+            OffsetDateTime periodStart,
+            OffsetDateTime periodEnd
+    ) {
         Map<Long, DailyReportUserAccumulator> usersById =
                 new LinkedHashMap<>();
 
@@ -80,8 +88,9 @@ public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataSe
             );
         }
 
-        return usersById.values().stream()
-                .map(DailyReportUserAccumulator::toResponse)
+        return usersById.values()
+                .stream()
+                .map(user -> user.toMessage(periodStart, periodEnd))
                 .toList();
     }
 
@@ -97,10 +106,15 @@ public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataSe
             this(userId, email, new ArrayList<>());
         }
 
-        private DailyReportUserData toResponse() {
-            return new DailyReportUserData(
+        private DailyReportUserTasksReady toMessage(
+                OffsetDateTime periodStart,
+                OffsetDateTime periodEnd
+        ) {
+            return new DailyReportUserTasksReady(
                     userId,
                     email,
+                    periodStart,
+                    periodEnd,
                     List.copyOf(tasks)
             );
         }
@@ -115,7 +129,10 @@ public class DailyReportSourceDataServiceImpl implements DailyReportSourceDataSe
         };
     }
 
-    private void validatePeriod(OffsetDateTime periodStart, OffsetDateTime periodEnd) {
+    private void validatePeriod(
+            OffsetDateTime periodStart,
+            OffsetDateTime periodEnd
+    ) {
         if (!periodStart.isBefore(periodEnd)) {
             throw new IllegalArgumentException(
                     "Period start must be before period end"

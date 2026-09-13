@@ -2,7 +2,7 @@ package org.example.scheduler.scheduler.dailyreport;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.scheduler.service.dailyreport.job.DailyReportJob;
+import org.example.scheduler.service.dailyreport.job.DailyReportGenerationJob;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -11,17 +11,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DailyReportScheduler {
 
-    private final DailyReportJob dailyReportJob;
+    private final DailyReportGenerationJob dailyReportGenerationJob;
 
     @Scheduled(
             cron = "${scheduler.daily-report-scheduling.cron}",
             zone = "${scheduler.daily-report-scheduling.zone}"
     )
     public void scheduleDailyReport() {
-        log.info("Scheduled daily report execution started");
+        log.info("Scheduled daily report generation started");
 
-        dailyReportJob.run();
+        dailyReportGenerationJob.run();
 
-        log.info("Scheduled daily report execution finished");
+        log.info("Scheduled daily report generation request finished");
     }
 }
