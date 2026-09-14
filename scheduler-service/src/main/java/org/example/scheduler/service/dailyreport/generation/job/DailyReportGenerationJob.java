@@ -1,4 +1,4 @@
-package org.example.scheduler.service.dailyreport.job;
+package org.example.scheduler.service.dailyreport.generation.job;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

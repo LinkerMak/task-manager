@@ -25,7 +25,7 @@ public class TaskSummaryKafkaListener {
             topics = TaskSummaryTopics.TASK_SUMMARY_REQUESTS,
             groupId = "${spring.kafka.consumer.group-id}"
     )
-    @SendTo
+    @SendTo(TaskSummaryTopics.TASK_SUMMARY_RESPONSES)
     public TaskSummaryResponse handle(@Payload @Valid TaskSummaryRequest request) {
         log.info(
                 "Received task summary request: requestId={}, tasksCount={}",

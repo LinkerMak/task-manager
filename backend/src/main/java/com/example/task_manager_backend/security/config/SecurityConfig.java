@@ -33,7 +33,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private void configureStatelessSecurity(HttpSecurity http) {
+    private void configureStatelessSecurity(HttpSecurity http) throws Exception {
         http
                 .sessionManagement(sm -> sm
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -48,7 +48,7 @@ public class SecurityConfig {
         );
     }
 
-    private void configureAuthorization(HttpSecurity http) {
+    private void configureAuthorization(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SecurityPaths.ERROR_PATH).permitAll()
@@ -60,13 +60,13 @@ public class SecurityConfig {
                 );
     }
 
-    private void configureAuthenticationEntryPoint(HttpSecurity http, AuthenticationEntryPoint authenticationEntryPoint) {
+    private void configureAuthenticationEntryPoint(HttpSecurity http, AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
         http
                 .exceptionHandling(e ->
                         e.authenticationEntryPoint(authenticationEntryPoint));
     }
 
-    private void disableUnusedDefaults(HttpSecurity http) {
+    private void disableUnusedDefaults(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form.disable())

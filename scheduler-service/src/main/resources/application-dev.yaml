@@ -40,3 +40,7 @@ scheduler:
   daily-report-scheduling:
     cron: "*/30 * * * * *"
     zone: "UTC"
+
+  outbox:
+    publishing:
+      fixed-delay: 5s

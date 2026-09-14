@@ -1,9 +1,9 @@
-package com.example.task_manager_backend.messaging.dailyreport.config;
+package org.example.scheduler.config.kafka.tasksummary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.example.taskmanager.contracts.dailyreport.DailyReportGenerationRequest;
+import org.example.taskmanager.contracts.summary.TaskSummaryResponse;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class DailyReportKafkaConfiguration {
+public class TaskSummaryResponseKafkaConfiguration {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<
             String,
-            DailyReportGenerationRequest
-            > dailyReportKafkaListenerContainerFactory(
+            TaskSummaryResponse
+            > taskSummaryResponseKafkaListenerContainerFactory(
             KafkaProperties kafkaProperties,
             ObjectMapper objectMapper
     ) {
@@ -34,31 +34,27 @@ public class DailyReportKafkaConfiguration {
                 StringDeserializer.class
         );
 
-        JsonDeserializer<DailyReportGenerationRequest> valueDeserializer =
+        JsonDeserializer<TaskSummaryResponse> valueDeserializer =
                 new JsonDeserializer<>(
-                        DailyReportGenerationRequest.class,
+                        TaskSummaryResponse.class,
                         objectMapper,
                         false
                 );
 
         valueDeserializer.addTrustedPackages(
-                DailyReportGenerationRequest.class.getPackageName()
+                TaskSummaryResponse.class.getPackageName()
         );
 
-        DefaultKafkaConsumerFactory<
-                String,
-                DailyReportGenerationRequest
-                > consumerFactory =
+        DefaultKafkaConsumerFactory<String, TaskSummaryResponse>
+                consumerFactory =
                 new DefaultKafkaConsumerFactory<>(
                         consumerProperties,
                         new StringDeserializer(),
                         valueDeserializer
                 );
 
-        ConcurrentKafkaListenerContainerFactory<
-                String,
-                DailyReportGenerationRequest
-                > factory =
+        ConcurrentKafkaListenerContainerFactory<String, TaskSummaryResponse>
+                factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory);

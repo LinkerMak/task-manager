@@ -3,7 +3,7 @@ package org.example.scheduler.listener.dailyreport;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.scheduler.service.dailyreport.workflow.DailyReportWorkflowCreationService;
+import org.example.scheduler.service.dailyreport.creation.DailyReportWorkflowCreationService;
 import org.example.taskmanager.contracts.dailyreport.DailyReportUserTasksReady;
 import org.example.taskmanager.contracts.dailyreport.topics.DailyReportTopics;
 import org.springframework.kafka.annotation.KafkaListener;

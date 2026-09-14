@@ -2,7 +2,7 @@ package org.example.scheduler.scheduler.dailyreport;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.scheduler.service.dailyreport.job.DailyReportGenerationJob;
+import org.example.scheduler.service.dailyreport.generation.job.DailyReportGenerationJob;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

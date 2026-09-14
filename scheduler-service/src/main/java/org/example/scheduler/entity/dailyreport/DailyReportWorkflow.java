@@ -68,13 +68,14 @@ public class DailyReportWorkflow {
         );
     }
 
-    public void markSummaryGenerated() {
+    public void markSummaryGenerated(String summaryText) {
         if (this.status != DailyReportWorkflowStatus.REQUESTED) {
             throw new IllegalStateException(
                     "Cannot mark workflow as summary requested with status:" + status
             );
         }
 
+        this.summaryText = summaryText;
         this.status = DailyReportWorkflowStatus.SUMMARY_GENERATED;
     }
 

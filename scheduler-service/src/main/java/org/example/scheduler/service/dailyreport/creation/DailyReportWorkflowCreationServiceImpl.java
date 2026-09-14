@@ -1,4 +1,4 @@
-package org.example.scheduler.service.dailyreport.workflow;
+package org.example.scheduler.service.dailyreport.creation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
