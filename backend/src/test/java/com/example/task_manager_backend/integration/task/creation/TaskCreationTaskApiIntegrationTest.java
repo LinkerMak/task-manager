@@ -3,18 +3,19 @@ package com.example.task_manager_backend.integration.task.creation;
 import com.example.task_manager_backend.AuthTestSupport;
 import com.example.task_manager_backend.AuthTestSupport.AuthenticatedTestUser;
 import com.example.task_manager_backend.dto.web.task.TaskRequest;
-import com.example.task_manager_backend.integration.task.AbstractIntegrationTest;
+import com.example.task_manager_backend.integration.task.AbstractTaskApiIntegrationTest;
 import com.example.task_manager_backend.models.task.Task;
 import com.example.task_manager_backend.repositories.TaskRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class TaskCreationIntegrationTest extends AbstractIntegrationTest {
+class TaskCreationTaskApiIntegrationTest extends AbstractTaskApiIntegrationTest {
 
     private static final String TASKS_URL = "/tasks";
 
@@ -47,7 +48,12 @@ class TaskCreationIntegrationTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("POST /tasks создаёт задачу и возвращает 201 с Location и телом ответа")
     void shouldCreateTaskForAuthenticatedUser() throws Exception {
+        System.out.println("STEP 1: test method entered");
+
         AuthenticatedTestUser user = authTestSupport.registerNewUser();
+
+        System.out.println("STEP 2: user registered");
+
         TaskRequest request = new TaskRequest("Buy milk", "2 liters");
 
         mockMvc.perform(post(TASKS_URL)

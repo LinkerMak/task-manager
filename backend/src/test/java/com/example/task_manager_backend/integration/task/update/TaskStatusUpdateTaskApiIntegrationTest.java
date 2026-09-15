@@ -4,19 +4,19 @@ import com.example.task_manager_backend.AuthTestSupport;
 import com.example.task_manager_backend.AuthTestSupport.AuthenticatedTestUser;
 import com.example.task_manager_backend.TaskTestSupport;
 import com.example.task_manager_backend.dto.web.task.update.UpdateTaskStatusRequest;
-import com.example.task_manager_backend.integration.task.AbstractIntegrationTest;
+import com.example.task_manager_backend.integration.task.AbstractTaskApiIntegrationTest;
 import com.example.task_manager_backend.models.task.Task;
 import com.example.task_manager_backend.models.task.TaskStatus;
 import com.example.task_manager_backend.repositories.TaskRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class TaskStatusUpdateIntegrationTest extends AbstractIntegrationTest {
+class TaskStatusUpdateTaskApiIntegrationTest extends AbstractTaskApiIntegrationTest {
 
     private static final String TASKS_URL = "/tasks";
 
