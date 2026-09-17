@@ -1,0 +1,8 @@
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: org.example.taskmanager.contracts.email
+        spring.json.value.default.type: org.example.taskmanager.contracts.email.EmailSendingTask
+        spring.json.use.type.headers: false
