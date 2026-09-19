@@ -1,5 +1,6 @@
-package com.example.emailsender.messaging.consumer;
+package com.example.emailsender.unit.messaging.consumer;
 
+import com.example.emailsender.integration.messaging.consumer.EmailSendingTaskListener;
 import com.example.emailsender.services.EmailDeliveryProcessingService;
 import org.example.taskmanager.contracts.email.EmailSendingTask;
 import org.junit.jupiter.api.Test;

@@ -1,23 +1,24 @@
 package com.example.emailsender.messaging.config;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
+@RequiredArgsConstructor
 public class KafkaTopicConfiguration {
 
-    public static final String EMAIL_SENDING_TASKS_TOPIC = "EMAIL_SENDING_TASKS";
-    public static final int PARTITIONS_COUNT = 1;
-    public static final int REPLICAS_COUNT = 1;
+    private static final int PARTITIONS_COUNT = 1;
+    private static final int REPLICAS_COUNT = 1;
 
-    public static final String EMAIL_SENDING_TASKS_DLT_TOPIC =
-            EMAIL_SENDING_TASKS_TOPIC + ".DLT";
+    private final KafkaTopicsProperties kafkaTopicsProperties;
 
     @Bean
     public NewTopic emailSendingTasksTopic() {
-        return TopicBuilder.name(EMAIL_SENDING_TASKS_TOPIC)
+        return TopicBuilder
+                .name(kafkaTopicsProperties.emailSendingTasks())
                 .partitions(PARTITIONS_COUNT)
                 .replicas(REPLICAS_COUNT)
                 .build();
@@ -25,7 +26,8 @@ public class KafkaTopicConfiguration {
 
     @Bean
     public NewTopic emailSendingTasksDltTopic() {
-        return TopicBuilder.name(EMAIL_SENDING_TASKS_DLT_TOPIC)
+        return TopicBuilder
+                .name(kafkaTopicsProperties.emailSendingTasksDlt())
                 .partitions(PARTITIONS_COUNT)
                 .replicas(REPLICAS_COUNT)
                 .build();

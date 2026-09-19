@@ -1,6 +1,5 @@
-package com.example.emailsender.messaging.consumer;
+package com.example.emailsender.integration.messaging.consumer;
 
-import com.example.emailsender.messaging.config.KafkaTopicConfiguration;
 import com.example.emailsender.services.EmailDeliveryProcessingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ public class EmailSendingTaskListener {
     private final EmailDeliveryProcessingService emailDeliveryProcessingService;
 
     @KafkaListener(
-            topics = KafkaTopicConfiguration.EMAIL_SENDING_TASKS_TOPIC,
+            topics = "${spring.kafka.topics.email-sending-tasks}",
             groupId = "${spring.kafka.consumer.group-id}"
     )
     public void handle(@Payload @Valid EmailSendingTask emailSendingTask) {

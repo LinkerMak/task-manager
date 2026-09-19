@@ -1,8 +1,10 @@
-package com.example.emailsender.services;
+package com.example.emailsender.unit.services;
 
 import com.example.emailsender.persistence.entity.EmailDelivery;
 import com.example.emailsender.persistence.entity.EmailDeliveryStatus;
 import com.example.emailsender.repositories.EmailDeliveryRepository;
+import com.example.emailsender.services.EmailDeliveryProcessingServiceImpl;
+import com.example.emailsender.services.EmailSendingService;
 import org.example.taskmanager.contracts.email.EmailSendingTask;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +20,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EmailDeliveryProcessingServiceImplTest {
@@ -101,7 +100,7 @@ class EmailDeliveryProcessingServiceImplTest {
         MailSendException mailSendException =
                 new MailSendException("SMTP server unavailable");
 
-        org.mockito.Mockito.doThrow(mailSendException)
+        doThrow(mailSendException)
                 .when(emailSendingService)
                 .send(task);
 

@@ -1,6 +1,7 @@
 package com.example.emailsender.messaging.config;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.SerializationException;
@@ -14,7 +15,10 @@ import org.springframework.util.backoff.FixedBackOff;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class KafkaErrorHandlingConfiguration {
+
+    private final KafkaTopicsProperties kafkaTopicsProperties;
 
     private static final long RETRY_INTERVAL_MS = 1_000L;
     private static final long MAX_RETRY_ATTEMPTS = 3L;
@@ -55,15 +59,15 @@ public class KafkaErrorHandlingConfiguration {
                 kafkaTemplate,
                 (record, exception) -> {
                     log.error(
-                            "Sending failed email task to DLT: topic={}, partition={}, offset={}, exceptionType={}",
+                            "Sending failed email task to DLT: topic={}, partition={}, offset={}",
                             record.topic(),
                             record.partition(),
                             record.offset(),
-                            exception.getClass().getSimpleName()
+                            exception
                     );
 
                     return new TopicPartition(
-                            KafkaTopicConfiguration.EMAIL_SENDING_TASKS_DLT_TOPIC,
+                            kafkaTopicsProperties.emailSendingTasksDlt(),
                             record.partition()
                     );
                 }
