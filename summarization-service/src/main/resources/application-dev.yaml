@@ -44,3 +44,7 @@ logging:
   level:
     org.example.summarizationservice.llm.deepseek.client: DEBUG
     feign: DEBUG
+
+management:
+  server:
+    port: 8084

@@ -31,7 +31,6 @@ spring:
         spring.json.add.type.headers: false
 
 
-  app:
-    kafka:
-      topics:
-        email-sending-tasks: EMAIL_SENDING_TASKS
+management:
+  server:
+    port: 8081

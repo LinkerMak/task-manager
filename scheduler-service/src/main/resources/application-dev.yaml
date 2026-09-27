@@ -44,3 +44,7 @@ scheduler:
   outbox:
     publishing:
       fixed-delay: 5s
+
+management:
+  server:
+    port: 8083

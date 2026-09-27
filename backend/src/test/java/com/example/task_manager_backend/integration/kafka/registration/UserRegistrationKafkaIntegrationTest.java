@@ -26,7 +26,7 @@ class UserRegistrationKafkaIntegrationTest
         extends AbstractKafkaIntegrationTest {
 
     private static final String EMAIL_SENDING_TASKS_TOPIC =
-            "EMAIL_SENDING_TASKS";
+            "email-sending-tasks";
 
     @Autowired
     private UserRegisterService userRegisterService;

@@ -51,6 +51,10 @@ public class SecurityConfig {
     private void configureAuthorization(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/actuator/health",
+                                "/actuator/health/**"
+                        ).permitAll()
                         .requestMatchers(SecurityPaths.ERROR_PATH).permitAll()
                         .requestMatchers(
                                 HttpMethod.POST,

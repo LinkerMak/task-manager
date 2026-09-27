@@ -6,7 +6,7 @@ import com.example.task_manager_backend.models.user.User;
 import com.example.task_manager_backend.repositories.UserRepository;
 import com.example.task_manager_backend.services.email.normalizer.EmailNormalizer;
 import com.example.task_manager_backend.services.jwt.JwtService;
-import com.example.task_manager_backend.services.registration.event.UserRegisteredEvent;
+import com.example.task_manager_backend.dto.event.UserRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

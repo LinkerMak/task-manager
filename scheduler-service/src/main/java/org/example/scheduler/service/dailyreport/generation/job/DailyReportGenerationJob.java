@@ -19,15 +19,15 @@ public class DailyReportGenerationJob {
     private final Clock clock;
 
     public void run() {
-        OffsetDateTime periodEnd = OffsetDateTime.now(clock)
-                .withOffsetSameInstant(ZoneOffset.UTC)
+        OffsetDateTime now = OffsetDateTime.now(clock)
+                .withOffsetSameInstant(ZoneOffset.UTC);
+
+        OffsetDateTime periodStart = now
                 .toLocalDate()
                 .atStartOfDay()
                 .atOffset(ZoneOffset.UTC);
 
-        OffsetDateTime periodStart = periodEnd.minusDays(1);
-
-        run(periodStart, periodEnd);
+        run(periodStart, now);
     }
 
     public void run(

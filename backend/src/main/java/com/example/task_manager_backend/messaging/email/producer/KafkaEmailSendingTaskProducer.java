@@ -3,7 +3,7 @@ package com.example.task_manager_backend.messaging.email.producer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.taskmanager.contracts.email.EmailSendingTask;
-import org.springframework.beans.factory.annotation.Value;
+import org.example.taskmanager.contracts.email.topics.EmailSendingTopics;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +14,10 @@ public class KafkaEmailSendingTaskProducer implements EmailSendingTaskProducer {
 
     private final KafkaTemplate<String, EmailSendingTask> kafkaTemplate;
 
-    @Value("${spring.app.kafka.topics.email-sending-tasks}")
-    private String emailSendingTasksTopic;
-
     @Override
     public void send(EmailSendingTask task) {
         kafkaTemplate.send(
-                emailSendingTasksTopic,
+                EmailSendingTopics.EMAIL_SENDING_TASKS,
                 task
         ).whenComplete(
                 (result, exception) -> {

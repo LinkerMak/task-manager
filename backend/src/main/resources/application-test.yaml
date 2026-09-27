@@ -4,11 +4,6 @@ spring:
       secret: c29tZS1zZWN1cmUtaW50ZWdyYXRpb24tdGVzdC1qd3Qta2V5LTMyeC1ieXRlcy1sb25n
       access-token-ttl: PT15M
 
-  app:
-    kafka:
-      topics:
-        email-sending-tasks: EMAIL_SENDING_TASKS
-
   kafka:
     listener:
       auto-startup: false

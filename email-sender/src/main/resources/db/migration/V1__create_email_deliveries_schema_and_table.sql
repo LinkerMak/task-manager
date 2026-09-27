@@ -1,4 +1,6 @@
-CREATE TABLE email_deliveries
+CREATE SCHEMA IF NOT EXISTS email_sender_schema;
+
+CREATE TABLE email_sender_schema.email_deliveries
 (
     message_id UUID PRIMARY KEY,
     recipient_email VARCHAR(320) NOT NULL,
@@ -10,5 +12,4 @@ CREATE TABLE email_deliveries
     CONSTRAINT chk_email_deliveries_status CHECK (
         status IN ('PROCESSING', 'SENT', 'FAILED')
         )
-
 );
