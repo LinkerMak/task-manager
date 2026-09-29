@@ -2,6 +2,7 @@ package com.example.task_manager_backend.controllers.auth;
 
 import com.example.task_manager_backend.dto.web.security.LoginRequest;
 import com.example.task_manager_backend.services.authentication.UserAuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.example.task_manager_backend.security.constants.SecurityConstants.BEARER_TOKEN_PREFIX;
 
+@SecurityRequirements
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")

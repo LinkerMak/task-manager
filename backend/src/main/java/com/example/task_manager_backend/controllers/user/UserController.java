@@ -4,6 +4,7 @@ import com.example.task_manager_backend.dto.web.security.RegisterRequest;
 import com.example.task_manager_backend.dto.web.user.CurrentUserResponse;
 import com.example.task_manager_backend.services.registration.UserRegisterService;
 import com.example.task_manager_backend.services.user.CurrentUserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ public class UserController {
     private final UserRegisterService userRegisterService;
     private final CurrentUserService currentUserService;
 
+    @SecurityRequirements
     @PostMapping
     public ResponseEntity<Void> register(
             @Valid @RequestBody RegisterRequest registerRequest) {

@@ -80,7 +80,8 @@ backend and email-sender
 - Spring Boot Actuator
 - Mailpit
 - Kafka UI
-- Gradle
+- Gradle 
+- Springdoc OpenAPI / Swagger UI
 
 ## Требования
 
@@ -196,6 +197,7 @@ summarization-service    running (healthy)
 | Сервис | Адрес | Назначение |
 |---|---|---|
 | Backend API | `http://localhost:8080` | REST API приложения |
+| Swagger UI | `http://localhost:8080/swagger-ui/index.html` | Документация и интерактивное тестирование Backend REST API |
 | Backend Actuator | `http://localhost:8081/actuator/health` | Health endpoint backend |
 | Email sender Actuator | `http://localhost:8082/actuator/health` | Health endpoint email-sender |
 | Scheduler Actuator | `http://localhost:8083/actuator/health` | Health endpoint scheduler-service |
@@ -211,6 +213,17 @@ summarization-service    running (healthy)
 curl.exe -i http://localhost:8081/actuator/health/readiness
 ```
 
+## Swagger UI
+
+Swagger UI доступен после запуска backend:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+Через Swagger UI можно зарегистрировать пользователя, выполнить login, получить JWT access token и протестировать REST API задач.
+
+Для доступа к защищённым endpoint’ам нажмите `Authorize` и вставьте access token. Swagger UI автоматически добавит заголовок `Authorization: Bearer <token>` к запросам.
 ## Проверка основного сценария
 
 После запуска Compose можно вручную проверить интеграцию сервисов:

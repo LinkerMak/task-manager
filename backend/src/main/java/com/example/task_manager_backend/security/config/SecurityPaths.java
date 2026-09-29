@@ -14,5 +14,16 @@ public final class SecurityPaths {
             "/auth/logout"
     );
 
+    public static final List<String> ACTUATOR_HEALTH_PATHS = List.of(
+            "/actuator/health",
+            "/actuator/health/**"
+    );
+
+    public static final List<String> SWAGGER_PATHS = List.of(
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+    );
+
     public final String ERROR_PATH = "/error";
 }

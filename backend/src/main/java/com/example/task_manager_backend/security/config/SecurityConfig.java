@@ -52,8 +52,10 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/actuator/health",
-                                "/actuator/health/**"
+                                SecurityPaths.SWAGGER_PATHS.toArray(new String[0])
+                        ).permitAll()
+                        .requestMatchers(
+                                SecurityPaths.ACTUATOR_HEALTH_PATHS.toArray(new String[0])
                         ).permitAll()
                         .requestMatchers(SecurityPaths.ERROR_PATH).permitAll()
                         .requestMatchers(

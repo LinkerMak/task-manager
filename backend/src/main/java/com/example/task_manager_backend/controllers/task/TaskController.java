@@ -9,6 +9,7 @@ import com.example.task_manager_backend.dto.web.task.update.UpdateTitleRequest;
 import com.example.task_manager_backend.services.task.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -85,7 +86,7 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<PagedResponse<TaskResponse>> getAllTasks(@AuthenticationPrincipal Long userId,
                                                                    @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC)
-                                                                   Pageable pageable) {
+                                                                   @ParameterObject Pageable pageable) {
         PagedResponse<TaskResponse> taskResponses = taskService.getAllTasksForUser(userId, pageable);
         return ResponseEntity
                 .ok()
