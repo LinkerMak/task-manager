@@ -38,7 +38,7 @@ spring:
 
 scheduler:
   daily-report-scheduling:
-    cron: "*/30 * * * * *"
+    cron: "*/59 * * * * *"
     zone: "UTC"
 
   outbox:

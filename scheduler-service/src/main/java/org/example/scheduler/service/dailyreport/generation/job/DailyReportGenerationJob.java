@@ -27,7 +27,9 @@ public class DailyReportGenerationJob {
                 .atStartOfDay()
                 .atOffset(ZoneOffset.UTC);
 
-        run(periodStart, now);
+        OffsetDateTime periodEnd = periodStart.plusDays(1);
+
+        run(periodStart, periodEnd);
     }
 
     public void run(
