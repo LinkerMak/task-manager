@@ -111,20 +111,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build OCI image archive
+      - name: Build Docker image archive
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ matrix.dockerfile }}
           tags: task-manager/${{ matrix.service }}:ci
-          outputs: type=oci,dest=/tmp/${{ matrix.service }}.tar
+          outputs: type=docker,dest=/tmp/${{ matrix.service }}.tar
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
-      - name: Upload OCI image archive
+      - name: Upload Docker image archive
         uses: actions/upload-artifact@v4
         with:
-          name: oci-image-${{ matrix.service }}-${{ github.run_id }}
+          name: docker-image-${{ matrix.service }}-${{ github.run_id }}
           path: /tmp/${{ matrix.service }}.tar
           if-no-files-found: error
           retention-days: 1
@@ -142,31 +142,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download backend OCI image
+      - name: Download backend Docker image
         uses: actions/download-artifact@v4
         with:
-          name: oci-image-backend-${{ github.run_id }}
+          name: docker-image-backend-${{ github.run_id }}
           path: /tmp/images
 
-      - name: Download email-sender OCI image
+      - name: Download email-sender Docker image
         uses: actions/download-artifact@v4
         with:
-          name: oci-image-email-sender-${{ github.run_id }}
+          name: docker-image-email-sender-${{ github.run_id }}
           path: /tmp/images
 
-      - name: Download scheduler-service OCI image
+      - name: Download scheduler-service Docker image
         uses: actions/download-artifact@v4
         with:
-          name: oci-image-scheduler-service-${{ github.run_id }}
+          name: docker-image-scheduler-service-${{ github.run_id }}
           path: /tmp/images
 
-      - name: Download summarization-service OCI image
+      - name: Download summarization-service Docker image
         uses: actions/download-artifact@v4
         with:
-          name: oci-image-summarization-service-${{ github.run_id }}
+          name: docker-image-summarization-service-${{ github.run_id }}
           path: /tmp/images
 
-      - name: Load OCI images into Docker
+      - name: Load Docker images into Docker
         run: |
           docker load --input /tmp/images/backend.tar
           docker load --input /tmp/images/email-sender.tar
@@ -254,7 +254,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image_name }}:${{ env.IMAGE_TAG }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image_name }}:main
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image_name }}:master
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
