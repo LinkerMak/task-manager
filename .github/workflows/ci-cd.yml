@@ -1,0 +1,347 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches:
+      - master
+
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ci-cd-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAMESPACE: ${{ github.repository_owner }}
+  IMAGE_TAG: sha-${{ github.sha }}
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Grant execute permission to Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Compile, test, and assemble application JARs
+        run: >
+          ./gradlew
+          clean
+          check
+          :backend:bootJar
+          :email-sender:bootJar
+          :scheduler-service:bootJar
+          :summarization-service:bootJar
+          --no-daemon
+          --stacktrace
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ github.run_id }}
+          path: |
+            **/build/reports/tests/**
+            **/build/test-results/**
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload application JARs
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-jars-${{ github.run_id }}
+          path: |
+            backend/build/libs/backend-0.0.1-SNAPSHOT.jar
+            email-sender/build/libs/email-sender-0.0.1-SNAPSHOT.jar
+            scheduler-service/build/libs/scheduler-service-0.0.1-SNAPSHOT.jar
+            summarization-service/build/libs/summarization-service-0.0.1-SNAPSHOT.jar
+          if-no-files-found: error
+          retention-days: 1
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 25
+
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: backend
+            dockerfile: backend/Dockerfile
+          - service: email-sender
+            dockerfile: email-sender/Dockerfile
+          - service: scheduler-service
+            dockerfile: scheduler-service/Dockerfile
+          - service: summarization-service
+            dockerfile: summarization-service/Dockerfile
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download application JARs
+        uses: actions/download-artifact@v4
+        with:
+          name: application-jars-${{ github.run_id }}
+          path: .
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image archive
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          tags: task-manager/${{ matrix.service }}:ci
+          outputs: type=docker,dest=/tmp/${{ matrix.service }}.tar
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+      - name: Upload Docker image archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-${{ matrix.service }}-${{ github.run_id }}
+          path: /tmp/${{ matrix.service }}.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  compose-smoke-test:
+    name: Compose smoke test
+    runs-on: ubuntu-latest
+    needs: docker-build
+    timeout-minutes: 20
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download backend Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-backend-${{ github.run_id }}
+          path: /tmp/images
+
+      - name: Download email-sender Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-email-sender-${{ github.run_id }}
+          path: /tmp/images
+
+      - name: Download scheduler-service Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-scheduler-service-${{ github.run_id }}
+          path: /tmp/images
+
+      - name: Download summarization-service Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-summarization-service-${{ github.run_id }}
+          path: /tmp/images
+
+      - name: Load Docker images into Docker
+        run: |
+          docker load --input /tmp/images/backend.tar
+          docker load --input /tmp/images/email-sender.tar
+          docker load --input /tmp/images/scheduler-service.tar
+          docker load --input /tmp/images/summarization-service.tar
+
+      - name: Start smoke environment
+        run: |
+          docker compose \
+            -f compose/compose.smoke.yaml \
+            up \
+            --detach \
+            --wait \
+            --wait-timeout 180
+
+      - name: Run business smoke test
+        run: bash scripts/smoke-test.sh
+
+      - name: Print Compose status
+        if: always()
+        run: docker compose -f compose/compose.smoke.yaml ps
+
+      - name: Print Compose logs on failure
+        if: failure()
+        run: docker compose -f compose/compose.smoke.yaml logs --no-color
+
+      - name: Stop smoke environment
+        if: always()
+        run: docker compose -f compose/compose.smoke.yaml down -v --remove-orphans
+
+  publish-images:
+    name: Publish images to GHCR
+    runs-on: ubuntu-latest
+    needs: compose-smoke-test
+    timeout-minutes: 25
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: backend
+            dockerfile: backend/Dockerfile
+            image_name: task-manager-backend
+          - service: email-sender
+            dockerfile: email-sender/Dockerfile
+            image_name: task-manager-email-sender
+          - service: scheduler-service
+            dockerfile: scheduler-service/Dockerfile
+            image_name: task-manager-scheduler-service
+          - service: summarization-service
+            dockerfile: summarization-service/Dockerfile
+            image_name: task-manager-summarization-service
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download application JARs
+        uses: actions/download-artifact@v4
+        with:
+          name: application-jars-${{ github.run_id }}
+          path: .
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push verified image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image_name }}:${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image_name }}:master
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+  release-ready:
+    name: Release ready manifest
+    runs-on: ubuntu-latest
+    needs: publish-images
+    timeout-minutes: 10
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    environment:
+      name: release-ready
+
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p release
+
+          backend_image="${REGISTRY}/${IMAGE_NAMESPACE}/task-manager-backend:${IMAGE_TAG}"
+          email_sender_image="${REGISTRY}/${IMAGE_NAMESPACE}/task-manager-email-sender:${IMAGE_TAG}"
+          scheduler_image="${REGISTRY}/${IMAGE_NAMESPACE}/task-manager-scheduler-service:${IMAGE_TAG}"
+          summarization_image="${REGISTRY}/${IMAGE_NAMESPACE}/task-manager-summarization-service:${IMAGE_TAG}"
+
+          backend_digest="$(docker buildx imagetools inspect "${backend_image}" --format '{{json .Manifest.Digest}}' | tr -d '"')"
+          email_sender_digest="$(docker buildx imagetools inspect "${email_sender_image}" --format '{{json .Manifest.Digest}}' | tr -d '"')"
+          scheduler_digest="$(docker buildx imagetools inspect "${scheduler_image}" --format '{{json .Manifest.Digest}}' | tr -d '"')"
+          summarization_digest="$(docker buildx imagetools inspect "${summarization_image}" --format '{{json .Manifest.Digest}}' | tr -d '"')"
+
+          cat > release/release-manifest.json <<EOF
+          {
+            "schemaVersion": 1,
+            "release": {
+              "commitSha": "${GITHUB_SHA}",
+              "pipelineRunId": "${GITHUB_RUN_ID}",
+              "pipelineRunAttempt": "${GITHUB_RUN_ATTEMPT}",
+              "createdAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            },
+            "images": {
+              "backend": {
+                "repository": "${REGISTRY}/${IMAGE_NAMESPACE}/task-manager-backend",
+                "tag": "${IMAGE_TAG}",
+                "digest": "${backend_digest}"
+              },
+              "emailSender": {
+                "repository": "${REGISTRY}/${IMAGE_NAMESPACE}/task-manager-email-sender",
+                "tag": "${IMAGE_TAG}",
+                "digest": "${email_sender_digest}"
+              },
+              "schedulerService": {
+                "repository": "${REGISTRY}/${IMAGE_NAMESPACE}/task-manager-scheduler-service",
+                "tag": "${IMAGE_TAG}",
+                "digest": "${scheduler_digest}"
+              },
+              "summarizationService": {
+                "repository": "${REGISTRY}/${IMAGE_NAMESPACE}/task-manager-summarization-service",
+                "tag": "${IMAGE_TAG}",
+                "digest": "${summarization_digest}"
+              }
+            }
+          }
+          EOF
+
+          echo "Release manifest:"
+          cat release/release-manifest.json
+
+      - name: Upload release manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest-${{ github.sha }}
+          path: release/release-manifest.json
+          if-no-files-found: error
+          retention-days: 90

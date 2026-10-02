@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: email-sender
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: email_sender_schema
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    schemas: email_sender_schema
+    default-schema: email_sender_schema
+    create-schemas: true
+
+management:
+  server:
+    port: 8081
+
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never

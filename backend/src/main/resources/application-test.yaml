@@ -1,0 +1,15 @@
+spring:
+  security:
+    jwt:
+      secret: c29tZS1zZWN1cmUtaW50ZWdyYXRpb24tdGVzdC1qd3Qta2V5LTMyeC1ieXRlcy1sb25n
+      access-token-ttl: PT15M
+
+  kafka:
+    listener:
+      auto-startup: false
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false

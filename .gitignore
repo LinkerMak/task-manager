@@ -34,3 +34,11 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Local secrets
+**/.env.*.local
+**/.env.local
+**/.env
+*.pem
+*.key
+

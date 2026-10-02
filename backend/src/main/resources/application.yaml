@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: task-manager-backend
+
+  data:
+    web:
+      pageable:
+        max-page-size: 100
+
+management:
+  server:
+    port: 8081
+
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+springdoc:
+  show-actuator: false
