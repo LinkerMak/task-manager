@@ -1,4 +1,4 @@
-name: task-manager-local
+name: task-manager-smoke
 
 services:
   postgres:
@@ -6,11 +6,7 @@ services:
     environment:
       POSTGRES_DB: task_manager
       POSTGRES_USER: task_manager_user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
-    ports:
-      - "127.0.0.1:5432:5432"
-    volumes:
-      - postgres-task-manager-data:/var/lib/postgresql/data
+      POSTGRES_PASSWORD: ci_task_manager_password
     healthcheck:
       test:
         [
@@ -19,15 +15,12 @@ services:
         ]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 12
       start_period: 10s
-    restart: unless-stopped
 
   kafka:
     image: apache/kafka:4.3.1
     hostname: kafka
-    ports:
-      - "127.0.0.1:9092:9092"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -54,25 +47,11 @@ services:
       timeout: 10s
       retries: 18
       start_period: 20s
-    restart: unless-stopped
-
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - "127.0.0.1:8085:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: task-manager-local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-    depends_on:
-      kafka:
-        condition: service_healthy
-    restart: unless-stopped
 
   mailpit:
     image: axllent/mailpit:latest
     ports:
-      - "127.0.0.1:1025:1025"
-      - "127.0.0.1:8025:8025"
+      - "8025:8025"
     healthcheck:
       test:
         [
@@ -83,20 +62,21 @@ services:
       timeout: 3s
       retries: 12
       start_period: 5s
-    restart: unless-stopped
 
   backend:
-    build:
-      context: ..
-      dockerfile: backend/Dockerfile
-    image: task-manager/backend:local
-    env_file:
-      - .env.backend.docker.local
+    image: task-manager/backend:ci
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ci
+      DB_URL: jdbc:postgresql://postgres:5432/task_manager
+      DB_USERNAME: task_manager_user
+      DB_PASSWORD: ci_task_manager_password
+      JWT_SECRET: Q2ktc21va2UtdGVzdC1KV1Qtc2VjcmV0LW11c3QtYmUtYXQtbGVhc3QtMzItYnl0ZXM=
+      JWT_ACCESS_TOKEN_TTL: PT15M
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SCHEDULER_API_KEY: ci-smoke-test-scheduler-api-key
     ports:
-      - "127.0.0.1:8080:8080"
-      - "127.0.0.1:8081:8081"
+      - "8080:8080"
+      - "8081:8081"
     depends_on:
       postgres:
         condition: service_healthy
@@ -112,19 +92,22 @@ services:
       timeout: 5s
       retries: 18
       start_period: 40s
-    restart: unless-stopped
 
   email-sender:
-    build:
-      context: ..
-      dockerfile: email-sender/Dockerfile
-    image: task-manager/email-sender:local
-    env_file:
-      - .env.email-sender.docker.local
+    image: task-manager/email-sender:ci
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ci
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM: noreply@task-manager.ci
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: task_manager
+      POSTGRES_USER: task_manager_user
+      POSTGRES_PASSWORD: ci_task_manager_password
     ports:
-      - "127.0.0.1:8082:8082"
+      - "8082:8082"
     depends_on:
       postgres:
         condition: service_healthy
@@ -142,19 +125,17 @@ services:
       timeout: 5s
       retries: 18
       start_period: 40s
-    restart: unless-stopped
 
   scheduler-service:
-    build:
-      context: ..
-      dockerfile: scheduler-service/Dockerfile
-    image: task-manager/scheduler-service:local
-    env_file:
-      - .env.scheduler.docker.local
+    image: task-manager/scheduler-service:ci
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ci
+      DB_URL: jdbc:postgresql://postgres:5432/task_manager
+      DB_USERNAME: task_manager_user
+      DB_PASSWORD: ci_task_manager_password
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     ports:
-      - "127.0.0.1:8083:8083"
+      - "8083:8083"
     depends_on:
       postgres:
         condition: service_healthy
@@ -170,19 +151,16 @@ services:
       timeout: 5s
       retries: 18
       start_period: 40s
-    restart: unless-stopped
 
   summarization-service:
-    build:
-      context: ..
-      dockerfile: summarization-service/Dockerfile
-    image: task-manager/summarization-service:local
-    env_file:
-      - .env.summarization.docker.local
+    image: task-manager/summarization-service:ci
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ci
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      DEEPSEEK_BASE_URL: http://deepseek-disabled
+      DEEPSEEK_API_KEY: ci-not-a-real-deepseek-key
     ports:
-      - "127.0.0.1:8084:8084"
+      - "8084:8084"
     depends_on:
       kafka:
         condition: service_healthy
@@ -196,7 +174,3 @@ services:
       timeout: 5s
       retries: 18
       start_period: 40s
-    restart: unless-stopped
-
-volumes:
-  postgres-task-manager-data:

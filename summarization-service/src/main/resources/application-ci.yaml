@@ -1,9 +1,6 @@
 spring:
-  config:
-    import: optional:file:./summarization-service/.env.summarization.service.local[.properties]
-
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
 
     consumer:
       group-id: summarization-service
@@ -16,7 +13,6 @@ spring:
       properties:
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
-
         spring.json.trusted.packages: org.example.taskmanager.contracts.summary
         spring.json.value.default.type: org.example.taskmanager.contracts.summary.TaskSummaryRequest
         spring.json.use.type.headers: false
@@ -27,29 +23,21 @@ spring:
       properties:
         spring.json.add.type.headers: false
 
+app:
+  summarization:
     listener:
-      ack-mode: record
+      enabled: false
 
 llm:
   deepseek:
-    base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
-    api-key: ${DEEPSEEK_API_KEY}
+    base-url: ${DEEPSEEK_BASE_URL:http://deepseek-disabled}
+    api-key: ${DEEPSEEK_API_KEY:ci-not-a-real-secret}
     model: deepseek-chat
     connection-timeout: 5s
     response-timeout: 20s
     temperature: 0.2
     max-output-tokens: 400
 
-logging:
-  level:
-    org.example.summarizationservice.llm.deepseek.client: DEBUG
-    feign: DEBUG
-
 management:
   server:
     port: 8084
-
-app:
-  summarization:
-    listener:
-      enabled: true
